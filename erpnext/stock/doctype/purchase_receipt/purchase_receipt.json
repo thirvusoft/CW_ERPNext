@@ -19,6 +19,7 @@
   "column_break1",
   "company",
   "posting_date",
+  "column_break_11",
   "posting_time",
   "set_posting_time",
   "apply_putaway_rule",
@@ -75,8 +76,8 @@
   "tax_category",
   "shipping_col",
   "shipping_rule",
-  "taxes_section",
   "taxes_and_charges",
+  "taxes_section",
   "taxes",
   "sec_tax_breakup",
   "other_charges_calculation",
@@ -577,9 +578,11 @@
    "read_only": 1
   },
   {
+   "collapsible": 1,
    "description": "Add / Edit Taxes and Charges",
    "fieldname": "taxes_charges_section",
    "fieldtype": "Section Break",
+   "label": "Taxes",
    "oldfieldtype": "Section Break",
    "options": "fa fa-money"
   },
@@ -845,6 +848,7 @@
    "collapsible_depends_on": "terms",
    "fieldname": "terms_section_break",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Terms and Conditions",
    "oldfieldtype": "Section Break",
    "options": "fa fa-legal"
@@ -1099,6 +1103,7 @@
    "default": "0",
    "fieldname": "apply_putaway_rule",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Apply Putaway Rule"
   },
   {
@@ -1142,17 +1147,20 @@
   {
    "fieldname": "dimension_col_break",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_11",
+   "fieldtype": "Column Break"
   }
  ],
  "icon": "fa fa-truck",
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-09-16 17:45:58.430132",
+ "modified": "2023-02-10 16:01:18.753727",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",
- "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {
@@ -1213,7 +1221,6 @@
  "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": [],
  "timeline_field": "supplier",
  "title_field": "title",
  "track_changes": 1

@@ -15,7 +15,7 @@ class ItemPriceDuplicateItem(frappe.ValidationError):
 class ItemPrice(Document):
 	def validate(self):
 		self.validate_item()
-		self.validate_dates()
+		# self.validate_dates()
 		self.update_price_list_details()
 		self.update_item_details()
 		self.check_duplicates()

@@ -102,11 +102,11 @@ def _get_party_details(
 	)
 	party = party_details[party_type.lower()]
 
-	if not ignore_permissions and not (
-		frappe.has_permission(party_type, "read", party)
-		or frappe.has_permission(party_type, "select", party)
-	):
-		frappe.throw(_("Not permitted for {0}").format(party), frappe.PermissionError)
+	# if not ignore_permissions and not (
+	# 	frappe.has_permission(party_type, "read", party)
+	# 	or frappe.has_permission(party_type, "select", party)
+	# ):
+	# 	frappe.throw(_("Not permitted for {0}").format(party), frappe.PermissionError)
 
 	party = frappe.get_doc(party_type, party)
 	currency = party.get("default_currency") or currency or get_company_currency(company)
@@ -748,13 +748,13 @@ def get_dashboard_info(party_type, party, loyalty_program=None):
 
 	doctype = "Sales Invoice" if party_type == "Customer" else "Purchase Invoice"
 
-	companies = frappe.get_all(
+	companies = frappe.get_list(
 		doctype, filters={"docstatus": 1, party_type.lower(): party}, distinct=1, fields=["company"]
 	)
 
 	company_wise_info = []
 
-	company_wise_grand_total = frappe.get_all(
+	company_wise_grand_total = frappe.get_list(
 		doctype,
 		filters={
 			"docstatus": 1,
@@ -776,7 +776,7 @@ def get_dashboard_info(party_type, party, loyalty_program=None):
 
 	if party_type == "Customer":
 		loyalty_point_details = frappe._dict(
-			frappe.get_all(
+			frappe.get_list(
 				"Loyalty Point Entry",
 				filters={
 					"customer": party,

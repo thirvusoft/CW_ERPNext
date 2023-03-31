@@ -624,6 +624,11 @@ def _get_item_tax_template(args, taxes, out=None, for_validate=False):
 		if cstr(tax.tax_category) == cstr(args.get("tax_category")):
 			out["item_tax_template"] = tax.item_tax_template
 			return tax.item_tax_template
+	for tax in taxes:
+		if tax.item_tax_template:            
+			out["item_tax_template"] = tax.item_tax_template
+			return tax.item_tax_template
+
 	return None
 
 
@@ -878,9 +883,9 @@ def get_item_price(args, item_code, ignore_party=False):
 		else:
 			conditions += "and (customer is null or customer = '') and (supplier is null or supplier = '')"
 
-	if args.get("transaction_date"):
-		conditions += """ and %(transaction_date)s between
-			ifnull(valid_from, '2000-01-01') and ifnull(valid_upto, '2500-12-31')"""
+	# if args.get("transaction_date"):
+	# 	conditions += """ and %(transaction_date)s between
+	# 		ifnull(valid_from, '2000-01-01') and ifnull(valid_upto, '2500-12-31')"""
 
 	return frappe.db.sql(
 		""" select name, price_list_rate, uom
@@ -1042,7 +1047,7 @@ def get_pos_profile_item_details(company, args, pos_profile=None, update_data=Fa
 		pos_profile = frappe.flags.pos_profile = get_pos_profile(company, args.get("pos_profile"))
 
 	if pos_profile:
-		for fieldname in ("income_account", "cost_center", "warehouse", "expense_account"):
+		for fieldname in ("income_account", "cost_center", "expense_account"):
 			if (not args.get(fieldname) or update_data) and pos_profile.get(fieldname):
 				res[fieldname] = pos_profile.get(fieldname)
 

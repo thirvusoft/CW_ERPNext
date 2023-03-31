@@ -174,9 +174,9 @@ class Item(Document):
 		from erpnext.stock.doctype.stock_entry.stock_entry_utils import make_stock_entry
 
 		# default warehouse, or Stores
-		for default in self.item_defaults or [
+		for default in [
 			frappe._dict({"company": frappe.defaults.get_defaults().company})
-		]:
+		] or self.item_defaults:
 			default_warehouse = default.default_warehouse or frappe.db.get_single_value(
 				"Stock Settings", "default_warehouse"
 			)

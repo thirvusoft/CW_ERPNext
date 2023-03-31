@@ -5,7 +5,6 @@
  "doctype": "Onboarding Step",
  "idx": 0,
  "is_complete": 0,
- "is_mandatory": 0,
  "is_single": 0,
  "is_skipped": 0,
  "modified": "2020-07-27 19:10:28.530226",
@@ -13,6 +12,7 @@
  "name": "Enroll a Student in a Program",
  "owner": "Administrator",
  "reference_document": "Program Enrollment",
+ "show_form_tour": 0,
  "show_full_form": 0,
  "title": "Enroll a Student in a Program",
  "validate_action": 1

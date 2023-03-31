@@ -9,7 +9,7 @@
  "charts_label": "",
  "creation": "2020-03-02 17:23:17.919682",
  "developer_mode_only": 0,
- "disable_user_customization": 0,
+ "disable_user_customization": 1,
  "docstatus": 0,
  "doctype": "Workspace",
  "extends_another_page": 0,
@@ -535,7 +535,7 @@
    "type": "Link"
   }
  ],
- "modified": "2021-10-29 14:31:16.795628",
+ "modified": "2023-01-25 14:38:24.453086",
  "modified_by": "Administrator",
  "module": "Healthcare",
  "name": "Healthcare",

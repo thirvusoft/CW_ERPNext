@@ -1,0 +1,41 @@
+{
+ "chart_name": "Stock Ageing Chart",
+ "chart_type": "Report",
+ "creation": "2023-03-20 22:46:40.657956",
+ "custom_options": "{\"x_field\": \"item_code\", \"chart_type\": \"Line\", \"y_axis_fields\": [{\"idx\": 1, \"__islocal\": true, \"name\": \"row 1\", \"y_field\": \"range1\"}, {\"idx\": 2, \"__islocal\": true, \"name\": \"row 2\", \"y_field\": \"range2\"}, {\"idx\": 3, \"__islocal\": true, \"name\": \"row 3\", \"y_field\": \"range3\"}, {\"idx\": 4, \"__islocal\": true, \"name\": \"row 4\", \"y_field\": \"range4\"}], \"y_fields\": [\"range1\", \"range2\", \"range3\", \"range4\"], \"colors\": [null, null, null, null]}",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart",
+ "filters_json": "{\"company\":\"TEAM CYCLE WORLD PVT. LTD.\",\"to_date\":\"2023-03-20\",\"range1\":30,\"range2\":60,\"range3\":90}",
+ "group_by_type": "Count",
+ "idx": 0,
+ "is_public": 0,
+ "is_standard": 1,
+ "modified": "2023-03-20 22:46:40.761443",
+ "modified_by": "Administrator",
+ "module": "Stock",
+ "name": "Stock Ageing Chart",
+ "number_of_groups": 0,
+ "owner": "Administrator",
+ "report_name": "Stock Ageing",
+ "roles": [],
+ "time_interval": "Yearly",
+ "timeseries": 0,
+ "timespan": "Last Year",
+ "type": "Line",
+ "use_report_chart": 0,
+ "x_field": "item_code",
+ "y_axis": [
+  {
+   "y_field": "range1"
+  },
+  {
+   "y_field": "range2"
+  },
+  {
+   "y_field": "range3"
+  },
+  {
+   "y_field": "range4"
+  }
+ ]
+}

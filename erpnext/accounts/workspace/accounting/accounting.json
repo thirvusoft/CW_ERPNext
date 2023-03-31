@@ -8,7 +8,7 @@
  ],
  "creation": "2020-03-02 15:41:59.515192",
  "developer_mode_only": 0,
- "disable_user_customization": 0,
+ "disable_user_customization": 1,
  "docstatus": 0,
  "doctype": "Workspace",
  "extends_another_page": 0,
@@ -62,16 +62,6 @@
    "is_query_report": 0,
    "label": "Fiscal Year",
    "link_to": "Fiscal Year",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Accounting Dimension",
-   "link_to": "Accounting Dimension",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -455,16 +445,16 @@
    "type": "Link"
   },
   {
-    "dependencies": "GL Entry",
-    "hidden": 0,
-    "is_query_report": 1,
-    "label": "KSA VAT Report",
-    "link_to": "KSA VAT",
-    "link_type": "Report",
-    "onboard": 0,
-    "only_for": "Saudi Arabia",
-    "type": "Link"
-   },
+   "dependencies": "GL Entry",
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "KSA VAT Report",
+   "link_to": "KSA VAT",
+   "link_type": "Report",
+   "onboard": 0,
+   "only_for": "Saudi Arabia",
+   "type": "Link"
+  },
   {
    "hidden": 0,
    "is_query_report": 0,
@@ -674,43 +664,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Subscription Management",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Subscription Plan",
-   "link_to": "Subscription Plan",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Subscription",
-   "link_to": "Subscription",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Subscription Settings",
-   "link_to": "Subscription Settings",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Goods and Services Tax (GST India)",
    "onboard": 0,
    "only_for": "India",
@@ -840,53 +793,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Share Management",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Shareholder",
-   "link_to": "Shareholder",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Share Transfer",
-   "link_to": "Share Transfer",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "Share Transfer",
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Share Ledger",
-   "link_to": "Share Ledger",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "Share Transfer",
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Share Balance",
-   "link_to": "Share Balance",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Cost Center and Budgeting",
    "onboard": 0,
    "type": "Card Break"
@@ -907,16 +813,6 @@
    "is_query_report": 0,
    "label": "Budget",
    "link_to": "Budget",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Accounting Dimension",
-   "link_to": "Accounting Dimension",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -1046,15 +942,15 @@
    "type": "Link"
   },
   {
-    "hidden": 0,
-    "is_query_report": 0,
-    "label": "KSA VAT Setting",
-    "link_to": "KSA VAT Setting",
-    "link_type": "DocType",
-    "onboard": 0,
-    "only_for": "Saudi Arabia",
-    "type": "Link"
-   },
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "KSA VAT Setting",
+   "link_to": "KSA VAT Setting",
+   "link_type": "DocType",
+   "onboard": 0,
+   "only_for": "Saudi Arabia",
+   "type": "Link"
+  },
   {
    "hidden": 0,
    "is_query_report": 0,
@@ -1103,7 +999,7 @@
    "type": "Link"
   }
  ],
- "modified": "2021-08-26 13:15:52.872470",
+ "modified": "2023-03-21 06:18:30.066866",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Accounting",
@@ -1115,16 +1011,6 @@
   {
    "label": "Chart of Accounts",
    "link_to": "Account",
-   "type": "DocType"
-  },
-  {
-   "label": "Sales Invoice",
-   "link_to": "Sales Invoice",
-   "type": "DocType"
-  },
-  {
-   "label": "Purchase Invoice",
-   "link_to": "Purchase Invoice",
    "type": "DocType"
   },
   {

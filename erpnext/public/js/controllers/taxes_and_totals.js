@@ -795,7 +795,7 @@ erpnext.taxes_and_totals = erpnext.payments.extend({
 					payment_status = false;
 
 				} else if(me.frm.doc.paid_amount) {
-					frappe.model.set_value(data.doctype, data.name, "amount", 0.0);
+					// frappe.model.set_value(data.doctype, data.name, "amount", 0.0);
 				}
 			});
 		}

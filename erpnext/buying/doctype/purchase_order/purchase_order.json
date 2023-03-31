@@ -10,16 +10,17 @@
  "field_order": [
   "supplier_section",
   "title",
+  "company",
   "naming_series",
   "supplier",
   "get_items_from_open_material_requests",
   "supplier_name",
-  "apply_tds",
   "tax_withholding_category",
   "column_break1",
-  "company",
   "transaction_date",
+  "column_break_13",
   "schedule_date",
+  "apply_tds",
   "order_confirmation_no",
   "order_confirmation_date",
   "amended_from",
@@ -73,6 +74,10 @@
   "total_net_weight",
   "total",
   "net_total",
+  "column_break_67",
+  "grand_total",
+  "column_break_69",
+  "total_taxes_and_charges",
   "section_break_48",
   "pricing_rules",
   "raw_material_details",
@@ -81,9 +86,9 @@
   "taxes_section",
   "tax_category",
   "column_break_50",
+  "taxes_and_charges",
   "shipping_rule",
   "section_break_52",
-  "taxes_and_charges",
   "taxes",
   "sec_tax_breakup",
   "other_charges_calculation",
@@ -94,7 +99,6 @@
   "column_break_39",
   "taxes_and_charges_added",
   "taxes_and_charges_deducted",
-  "total_taxes_and_charges",
   "discount_section",
   "apply_discount_on",
   "base_discount_amount",
@@ -106,11 +110,10 @@
   "base_rounding_adjustment",
   "base_in_words",
   "base_rounded_total",
-  "column_break4",
-  "grand_total",
   "rounding_adjustment",
   "rounded_total",
   "disable_rounded_total",
+  "column_break_105",
   "in_words",
   "advance_paid",
   "payment_schedule_section",
@@ -451,6 +454,7 @@
    "description": "Sets 'Warehouse' in each row of the Items table.",
    "fieldname": "set_warehouse",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Set Target Warehouse",
    "options": "Warehouse",
    "print_hide": 1
@@ -581,13 +585,17 @@
   {
    "fieldname": "total_net_weight",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "Total Net Weight",
    "print_hide": 1,
    "read_only": 1
   },
   {
+   "collapsible": 1,
    "fieldname": "taxes_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "Taxes",
    "oldfieldtype": "Section Break",
    "options": "fa fa-money"
   },
@@ -614,6 +622,7 @@
   {
    "fieldname": "section_break_52",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "hide_border": 1
   },
   {
@@ -720,6 +729,7 @@
    "collapsible_depends_on": "apply_discount_on",
    "fieldname": "discount_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Additional Discount"
   },
   {
@@ -756,6 +766,7 @@
    "print_hide": 1
   },
   {
+   "collapsible": 1,
    "fieldname": "totals_section",
    "fieldtype": "Section Break",
    "label": "Totals"
@@ -763,6 +774,7 @@
   {
    "fieldname": "base_grand_total",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Grand Total (Company Currency)",
    "no_copy": 1,
    "oldfieldname": "grand_total",
@@ -775,6 +787,7 @@
    "depends_on": "eval:!doc.disable_rounded_total",
    "fieldname": "base_rounding_adjustment",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Rounding Adjustment (Company Currency)",
    "no_copy": 1,
    "options": "Company:company:default_currency",
@@ -785,6 +798,7 @@
    "description": "In Words will be visible once you save the Purchase Order.",
    "fieldname": "base_in_words",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "In Words (Company Currency)",
    "length": 240,
    "oldfieldname": "in_words",
@@ -795,17 +809,13 @@
   {
    "fieldname": "base_rounded_total",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Rounded Total (Company Currency)",
    "oldfieldname": "rounded_total",
    "oldfieldtype": "Currency",
    "options": "Company:company:default_currency",
    "print_hide": 1,
    "read_only": 1
-  },
-  {
-   "fieldname": "column_break4",
-   "fieldtype": "Column Break",
-   "oldfieldtype": "Column Break"
   },
   {
    "fieldname": "grand_total",
@@ -838,6 +848,7 @@
    "default": "0",
    "fieldname": "disable_rounded_total",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Disable Rounded Total"
   },
   {
@@ -863,6 +874,7 @@
    "collapsible": 1,
    "fieldname": "payment_schedule_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Payment Terms"
   },
   {
@@ -1164,17 +1176,32 @@
    "fieldtype": "Link",
    "label": "Project",
    "options": "Project"
+  },
+  {
+   "fieldname": "column_break_13",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_105",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_67",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_69",
+   "fieldtype": "Column Break"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-12-25 18:08:59.074182",
+ "modified": "2023-03-30 16:44:09.710297",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",
- "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {
@@ -1221,7 +1248,6 @@
  "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": [],
  "timeline_field": "supplier",
  "title_field": "supplier_name",
  "track_changes": 1

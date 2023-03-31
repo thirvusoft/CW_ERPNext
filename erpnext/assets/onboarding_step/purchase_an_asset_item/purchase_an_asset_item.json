@@ -5,7 +5,6 @@
  "doctype": "Onboarding Step",
  "idx": 0,
  "is_complete": 0,
- "is_mandatory": 0,
  "is_single": 0,
  "is_skipped": 0,
  "modified": "2020-05-08 13:21:28.208059",
@@ -13,6 +12,7 @@
  "name": "Purchase an Asset Item",
  "owner": "Administrator",
  "reference_document": "Purchase Receipt",
+ "show_form_tour": 0,
  "show_full_form": 0,
  "title": "Purchase an Asset Item",
  "validate_action": 0

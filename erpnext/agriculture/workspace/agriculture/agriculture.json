@@ -3,13 +3,14 @@
  "charts": [],
  "creation": "2020-03-02 17:23:34.339274",
  "developer_mode_only": 0,
- "disable_user_customization": 0,
+ "disable_user_customization": 1,
  "docstatus": 0,
  "doctype": "Workspace",
  "extends_another_page": 0,
  "hide_custom": 0,
  "icon": "agriculture",
  "idx": 0,
+ "is_default": 0,
  "is_standard": 1,
  "label": "Agriculture",
  "links": [
@@ -145,7 +146,7 @@
    "type": "Link"
   }
  ],
- "modified": "2020-12-01 13:38:38.477493",
+ "modified": "2023-01-25 14:38:25.430579",
  "modified_by": "Administrator",
  "module": "Agriculture",
  "name": "Agriculture",

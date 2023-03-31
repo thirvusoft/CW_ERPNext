@@ -304,7 +304,10 @@ class PurchaseInvoice(BuyingController):
 							frappe.bold(item.warehouse),
 						)
 						frappe.msgprint(msg, title=_("Expense Head Changed"))
-					item.expense_account = warehouse_account[item.warehouse]["account"]
+					try:
+						item.expense_account = warehouse_account[item.warehouse]["account"]
+					except:
+						pass
 				else:
 					# check if 'Stock Received But Not Billed' account is credited in Purchase receipt or not
 					if item.purchase_receipt:

@@ -10,16 +10,18 @@
   "type_of_payment",
   "naming_series",
   "payment_type",
+  "mode_of_payment",
+  "is_bank_mode",
   "payment_order_status",
   "column_break_5",
   "posting_date",
   "company",
-  "mode_of_payment",
   "party_section",
   "party_type",
+  "col1",
   "party",
+  "col2",
   "party_name",
-  "column_break_11",
   "bank_account",
   "party_bank_account",
   "contact_person",
@@ -47,6 +49,10 @@
   "target_exchange_rate",
   "base_received_amount",
   "base_received_amount_after_tax",
+  "transaction_references",
+  "reference_no",
+  "column_break_23",
+  "reference_date",
   "section_break_14",
   "get_outstanding_invoice",
   "references",
@@ -72,10 +78,6 @@
   "total_taxes_and_charges",
   "deductions_or_loss_section",
   "deductions",
-  "transaction_references",
-  "reference_no",
-  "column_break_23",
-  "reference_date",
   "clearance_date",
   "accounting_dimensions_section",
   "project",
@@ -190,10 +192,6 @@
    "fieldtype": "Data",
    "in_global_search": 1,
    "label": "Party Name"
-  },
-  {
-   "fieldname": "column_break_11",
-   "fieldtype": "Column Break"
   },
   {
    "depends_on": "party",
@@ -726,16 +724,30 @@
    "fieldname": "section_break_60",
    "fieldtype": "Section Break",
    "hide_border": 1
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "mode_of_payment.type",
+   "fieldname": "is_bank_mode",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Is Bank Mode"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-02-23 20:08:39.559814",
+ "modified": "2023-03-04 19:34:33.098106",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",
- "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {
@@ -774,7 +786,6 @@
  "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": [],
  "title_field": "title",
  "track_changes": 1
 }

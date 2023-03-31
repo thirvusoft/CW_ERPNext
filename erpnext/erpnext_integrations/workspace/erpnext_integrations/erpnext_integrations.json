@@ -3,13 +3,14 @@
  "charts": [],
  "creation": "2020-08-20 19:30:48.138801",
  "developer_mode_only": 0,
- "disable_user_customization": 0,
+ "disable_user_customization": 1,
  "docstatus": 0,
  "doctype": "Workspace",
  "extends": "Integrations",
  "extends_another_page": 1,
  "hide_custom": 1,
  "idx": 0,
+ "is_default": 0,
  "is_standard": 1,
  "label": "ERPNext Integrations",
  "links": [
@@ -105,7 +106,7 @@
    "type": "Link"
   }
  ],
- "modified": "2020-12-01 13:38:35.846528",
+ "modified": "2023-01-25 14:38:26.095173",
  "modified_by": "Administrator",
  "module": "ERPNext Integrations",
  "name": "ERPNext Integrations",

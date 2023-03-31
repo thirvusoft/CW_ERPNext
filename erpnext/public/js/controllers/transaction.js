@@ -2177,8 +2177,8 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 				'item_group': item.item_group,
 			}
 
-			if (doc.tax_category)
-				filters['tax_category'] = doc.tax_category;
+			// if (doc.tax_category)
+			// 	filters['tax_category'] = doc.tax_category;
 			if (doc.company)
 				filters['company'] = doc.company;
 			return {

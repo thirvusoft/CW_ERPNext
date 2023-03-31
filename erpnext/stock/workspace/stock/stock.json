@@ -8,7 +8,7 @@
  ],
  "creation": "2020-03-02 15:43:10.096528",
  "developer_mode_only": 0,
- "disable_user_customization": 0,
+ "disable_user_customization": 1,
  "docstatus": 0,
  "doctype": "Workspace",
  "extends_another_page": 0,
@@ -691,7 +691,7 @@
    "type": "Link"
   }
  ],
- "modified": "2021-05-13 13:10:24.914983",
+ "modified": "2023-03-10 11:34:24.346969",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock",
@@ -745,6 +745,12 @@
   {
    "label": "Stock Balance",
    "link_to": "Stock Balance",
+   "type": "Report"
+  },
+  {
+   "doc_view": "",
+   "label": "Model Wise Item Price Editor (Item List)",
+   "link_to": "Model Wise Item Price Editor (Item List)",
    "type": "Report"
   },
   {
