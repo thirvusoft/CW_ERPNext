@@ -2,6 +2,7 @@
  "actions": [],
  "allow_auto_repeat": 1,
  "allow_import": 1,
+ "allow_rename": 1,
  "autoname": "naming_series:",
  "creation": "2022-01-25 10:29:58.717206",
  "doctype": "DocType",
@@ -492,8 +493,7 @@
    "oldfieldname": "amended_from",
    "oldfieldtype": "Link",
    "options": "Journal Entry",
-   "print_hide": 1,
-   "read_only": 1
+   "print_hide": 1
   },
   {
    "fieldname": "from_template",
@@ -539,11 +539,10 @@
  "idx": 176,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-06-23 22:01:32.348337",
+ "modified": "2023-04-06 16:21:15.878294",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",
- "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {
@@ -587,7 +586,6 @@
  "search_fields": "voucher_type,posting_date, due_date, cheque_no",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": [],
  "title_field": "title",
  "track_changes": 1
 }

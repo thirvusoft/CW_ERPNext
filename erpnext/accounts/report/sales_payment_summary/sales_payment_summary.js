@@ -34,12 +34,21 @@ frappe.query_reports["Sales Payment Summary"] = {
 		{
 			"fieldname":"is_pos",
 			"label": __("Show only POS"),
-			"fieldtype": "Check"
+			"fieldtype": "Check",
+			"hidden":1
 		},
 		{
 			"fieldname":"payment_detail",
 			"label": __("Show Payment Details"),
 			"fieldtype": "Check"
+		},
+		{
+			"fieldname":"branch",
+			"label": __("Branch"),
+			"fieldtype": "Link",
+			"options": "Branch",
+			"default": frappe.defaults.get_user_permissions()['Branch']?frappe.defaults.get_user_permissions()['Branch'][0].doc:'',
+			"read_only": (frappe.defaults.get_user_permissions()['Branch'] && frappe.defaults.get_user_permissions()['Branch'].length == 1)?1:0
 		},
 	]
 };

@@ -11,6 +11,12 @@
   },
   {
    "card": "Total Outgoing Payment"
+  },
+  {
+   "card": "Total Receivables"
+  },
+  {
+   "card": "Total Payables"
   }
  ],
  "charts": [
@@ -35,12 +41,12 @@
    "width": "Half"
   },
   {
-   "chart": "Budget Variance",
+   "chart": "Bank Balance",
    "width": "Full"
   },
   {
-   "chart": "Bank Balance",
-   "width": "Full"
+   "chart": "Mode of payment-wise received amt",
+   "width": "Half"
   }
  ],
  "creation": "2020-07-17 11:25:34.796608",
@@ -50,8 +56,8 @@
  "idx": 0,
  "is_default": 0,
  "is_standard": 1,
- "modified": "2020-07-22 13:07:34.540574",
- "modified_by": "Administrator",
+ "modified": "2023-04-12 23:26:59.438830",
+ "modified_by": "nithya@thirvusoft.in",
  "module": "Accounts",
  "name": "Accounts",
  "owner": "Administrator"

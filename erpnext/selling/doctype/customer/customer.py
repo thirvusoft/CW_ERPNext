@@ -3,6 +3,7 @@
 
 
 import json
+from erpnext.regional.india.utils import get_gst_accounts
 
 import frappe
 import frappe.defaults
@@ -495,8 +496,41 @@ def get_customer_list(doctype, txt, searchfield, start, page_len, filters=None):
 	)
 
 
-def check_credit_limit(customer, company, ignore_outstanding_sales_order=False, extra_amount=0):
-	credit_limit = get_credit_limit(customer, company)
+def check_credit_limit(customer, company, name=None, ignore_outstanding_sales_order=False, extra_amount=0):
+	# branch wise credit limit
+	if not name:
+		return 
+	credit_limit = get_credit_limit_brand_wise(customer, company, name=None)
+	message = ''
+	for i in credit_limit:
+		if i['credit'] > 0 and flt(i['current_credit']) > i['credit']:
+			if i.get('brand'):
+				message = message+"<br>Brand <b>"+i.get('brand')+"</b> Credit limit has been crossed ("+str(round(i['current_credit'], 2))+"/"+str(i['credit'])+"). "
+			elif i.get('company'):
+				message = message+"<br>Company <b>"+i.get('company')+"</b> Credit limit has been crossed ("+str(round(i['current_credit'], 2))+"/"+str(i['credit'])+"). "
+	if message:
+		message = "Credit limit has been crossed for customer "+customer+'. '+message
+		credit_controller_role = frappe.db.get_single_value("Accounts Settings", "credit_controller")
+		# if not credit_controller_role or credit_controller_role not in frappe.get_roles():
+		# 	# form a list of emails for the credit controller users
+		# 	credit_controller_users = get_users_with_role(credit_controller_role or "Sales Master Manager")
+		# 	frappe.msgprint(
+		# 			message,
+		# 			title="Notify",
+		# 			raise_exception=1,
+		# 			primary_action={
+		# 				"label": "Send Email",
+		# 				"server_action": "erpnext.selling.doctype.customer.customer.send_emails_branch_wise",
+		# 				"args": {
+		# 					"customer": customer,
+		# 					"message_brand_wise": message,
+		# 					"credit_controller_users_list": credit_controller_users,
+		# 				},
+		# 			},
+		# 		)
+		frappe.throw(message)
+	return
+	# end
 	if not credit_limit:
 		return
 
@@ -561,7 +595,13 @@ def send_emails(args):
 	frappe.sendmail(
 		recipients=args.get("credit_controller_users_list"), subject=subject, message=message
 	)
-
+def send_emails_branch_wise(args):
+	args = json.loads(args)
+	subject = _("Credit limit reached for customer {0}").format(args.get("customer"))
+	message = args.get("message_brand_wise")
+	frappe.sendmail(
+		recipients=args.get("credit_controller_users_list"), subject=subject, message=message
+	)
 
 def get_customer_outstanding(
 	customer, company, ignore_outstanding_sales_order=False, cost_center=None
@@ -675,7 +715,154 @@ def get_credit_limit(customer, company):
 		credit_limit = frappe.get_cached_value("Company", company, "credit_limit")
 
 	return flt(credit_limit)
+# branch wise credit limit
+def get_credit_limit_brand_wise(customer, company, name=None):
+	credit_limit = None
 
+	if customer:
+		credit_limit = frappe.db.get_all(
+			"Customer Credit Limit",
+			filters={"parent": customer, "parenttype": "Customer", "company": company},
+			fields=["credit_limit", "brand", "company"],
+		)
+
+		if not credit_limit:
+			customer_group = frappe.get_cached_value("Customer", customer, "customer_group")
+			credit_limit = frappe.db.get_all(
+				"Customer Credit Limit",
+				filters={"parent": customer_group, "parenttype": "Customer Group", "company": company},
+				fields=["credit_limit", "brand", "company"],
+			)
+
+	if not credit_limit:
+		credit_limit = frappe.get_cached_value("Company", company, "credit_limit")
+	credit_value = []
+	brand = []
+	creditCompany = ''
+	if credit_limit:
+		for credit in credit_limit:
+			if credit.brand != None:
+				credit_value.append({"brand":credit.brand,"credit":credit.credit_limit,'current_credit':0})
+				brand.append(credit.brand)
+			else:
+				if credit.company and credit.brand == None:
+					credit_value.append({"company":credit.company,"credit":credit.credit_limit,'current_credit':0})
+					creditCompany = credit.company
+	
+	outstand_invoice = frappe.db.get_all(
+			"Sales Invoice",
+			filters={"customer": customer,"company": company,"outstanding_amount":['>',0],"docstatus":1},
+			pluck="name"
+		)	
+	if name:
+		if name not in outstand_invoice:
+			outstand_invoice.append(name)
+	paid_amount = sum(frappe.db.get_all(
+			"Sales Invoice",
+			filters={"customer": customer,"company": company,"outstanding_amount":['>',0],"docstatus":1},
+			pluck="paid_amount"
+		))
+	companyCredit = 0
+	for i in outstand_invoice:
+		sales_invoice = frappe.get_doc("Sales Invoice",i)
+		if sales_invoice.taxes:
+			# if sales_invoice.taxes[0].included_in_print_rate == 1:
+			# 	for item in sales_invoice.items:
+			# 		taxes = update_item_taxes(sales_invoice, item)
+			# 		tax = taxes["cgst_amount"] + taxes["sgst_amount"] + taxes["igst_amount"] + taxes["tcs_amount"]
+			# 		brandName = frappe.db.get_value("Item",item.item_code,"brand")
+			# 		if brandName in brand:
+			# 			for j in credit_value:
+			# 				if j.get('brand') == brandName:
+			# 					brandCredit = j['current_credit'] + item.amount
+			# 					j.update({'current_credit':brandCredit})
+			# 		else:
+			# 			companyCredit = companyCredit + item.amount
+			# 			for j in credit_value:
+			# 				if j.get('company'):
+			# 					j.update({'current_credit':companyCredit - paid_amount})
+			# else:
+				for item in sales_invoice.items:
+					taxes = update_item_taxes(sales_invoice, item)
+					tax = taxes["cgst_amount"] + taxes["sgst_amount"] + taxes["igst_amount"] + taxes["tcs_amount"]
+					brandName = frappe.db.get_value("Item",item.item_code,"brand")
+					if brandName in brand:
+						for j in credit_value:
+							if j.get('brand') == brandName:
+								brandCredit = j['current_credit'] + (taxes["taxable_value"] + tax)
+								j.update({'current_credit':brandCredit})
+					else:
+						companyCredit = companyCredit + (taxes["taxable_value"] + tax)
+						for j in credit_value:
+							if j.get('company'):
+								j.update({'current_credit':companyCredit - paid_amount})
+				
+		else:
+			for item in sales_invoice.items:
+					brandName = frappe.db.get_value("Item",item.item_code,"brand")
+					if brandName in brand:
+						for j in credit_value:
+							if j.get('brand') == brandName:
+								brandCredit = j['current_credit'] + item.net_amount
+								j.update({'current_credit':brandCredit})
+					else:
+						companyCredit = companyCredit + item.net_amount
+						for j in credit_value:
+							if j.get('company'):
+								j.update({'current_credit':companyCredit - paid_amount})
+	
+	return credit_value
+	#end
+def update_item_taxes(invoice, item):
+	gst_accounts = get_gst_accounts(invoice.company)
+	gst_accounts_list = [d for accounts in gst_accounts.values() for d in accounts if d]
+	item = item.__dict__
+	for attr in [
+		"tax_rate",
+		"cess_rate",
+		"cess_nadv_amount",
+		"cgst_amount",
+		"sgst_amount",
+		"igst_amount",
+		"cess_amount",
+		"cess_nadv_amount",
+		"other_charges",
+		"tcs_amount",
+	]:
+		item[attr] = 0
+
+	for t in invoice.taxes:
+		is_applicable = t.tax_amount and t.account_head in gst_accounts_list
+		if is_applicable:
+			# this contains item wise tax rate & tax amount (incl. discount)
+			item_tax_detail = json.loads(t.item_wise_tax_detail).get(item['item_code'] or item['item_name'])
+
+			item_tax_rate = item_tax_detail[0]
+			# item tax amount excluding discount amount
+			item_tax_amount = (item_tax_rate / 100) * item['taxable_value']
+			if t.account_head in gst_accounts.cess_account:
+				item_tax_amount_after_discount = item_tax_detail[1]
+				if t.charge_type == "On Item Quantity":
+					item['cess_nadv_amount'] += abs(item_tax_amount_after_discount)
+				else:
+					item['cess_rate'] += item_tax_rate
+					item['cess_amount'] += abs(item_tax_amount_after_discount)
+
+			for tax_type in ["igst", "cgst", "sgst", "utgst"]:
+				if t.account_head in gst_accounts[f"{tax_type}_account"]:
+					item['tax_rate'] += item_tax_rate
+					if tax_type == "utgst":
+						# utgst taxes are reported same as sgst tax
+						item["sgst_amount"] += abs(item_tax_amount)
+					else:
+						item[f"{tax_type}_amount"] += abs(item_tax_amount)
+
+		else:
+			# TODO: other charges per item
+			if t.account_head == "TCS - "+frappe.get_value("Company",invoice.company,"abbr"):
+				item_tax_detail = json.loads(t.item_wise_tax_detail).get(item['item_code'] or item['item_name'])
+				item["tcs_amount"] += item_tax_detail[1]
+	return item
 
 def make_contact(args, is_primary_contact=1):
 	contact = frappe.get_doc(

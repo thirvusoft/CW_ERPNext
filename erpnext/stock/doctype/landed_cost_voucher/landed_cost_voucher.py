@@ -102,7 +102,7 @@ class LandedCostVoucher(Document):
 				)
 
 	def set_total_taxes_and_charges(self):
-		self.total_taxes_and_charges = sum(flt(d.base_amount) for d in self.get("taxes"))
+		self.total_taxes_and_charges = sum(flt(d.base_amount) for d in self.get("taxes") if not d.get('is_fixed_expense'))
 
 	def set_applicable_charges_on_item(self):
 		if self.get("taxes") and self.distribute_charges_based_on != "Distribute Manually":
@@ -110,7 +110,7 @@ class LandedCostVoucher(Document):
 			total_charges = 0.0
 			item_count = 0
 			based_on_field = frappe.scrub(self.distribute_charges_based_on)
-
+			item_wise_fixed_exp = {i.item : i.amount for i in self.taxes if i.is_fixed_expense}
 			for item in self.get("items"):
 				total_item_cost += item.get(based_on_field)
 
@@ -118,8 +118,9 @@ class LandedCostVoucher(Document):
 				item.applicable_charges = flt(
 					flt(item.get(based_on_field)) * (flt(self.total_taxes_and_charges) / flt(total_item_cost)),
 					item.precision("applicable_charges"),
-				)
-				total_charges += item.applicable_charges
+					) + item_wise_fixed_exp.get(item.item_code, 0)
+				item.item_fixed_exp = item_wise_fixed_exp.get(item.item_code, 0)
+				total_charges += (item.applicable_charges - item_wise_fixed_exp.get(item.item_code, 0))
 				item_count += 1
 
 			if total_charges != self.total_taxes_and_charges:
@@ -142,24 +143,24 @@ class LandedCostVoucher(Document):
 				).format(based_on)
 			)
 
-		total_applicable_charges = sum(flt(d.applicable_charges) for d in self.get("items"))
+		# total_applicable_charges = sum(flt(d.applicable_charges) for d in self.get("items"))
 
-		precision = get_field_precision(
-			frappe.get_meta("Landed Cost Item").get_field("applicable_charges"),
-			currency=frappe.get_cached_value("Company", self.company, "default_currency"),
-		)
+		# precision = get_field_precision(
+		# 	frappe.get_meta("Landed Cost Item").get_field("applicable_charges"),
+		# 	currency=frappe.get_cached_value("Company", self.company, "default_currency"),
+		# )
 
-		diff = flt(self.total_taxes_and_charges) - flt(total_applicable_charges)
-		diff = flt(diff, precision)
+		# diff = flt(self.total_taxes_and_charges) - flt(total_applicable_charges)
+		# diff = flt(diff, precision)
 
-		if abs(diff) < (2.0 / (10**precision)):
-			self.items[-1].applicable_charges += diff
-		else:
-			frappe.throw(
-				_(
-					"Total Applicable Charges in Purchase Receipt Items table must be same as Total Taxes and Charges"
-				)
-			)
+		# if abs(diff) < (2.0 / (10**precision)):
+		# 	self.items[-1].applicable_charges += diff
+		# else:
+		# 	frappe.throw(
+		# 		_(
+		# 			"Total Applicable Charges in Purchase Receipt Items table must be same as Total Taxes and Charges"
+		# 		)
+		# 	)
 
 	def on_submit(self):
 		self.update_landed_cost()

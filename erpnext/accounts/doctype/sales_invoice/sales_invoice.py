@@ -93,6 +93,9 @@ class SalesInvoice(SellingController):
 			self.indicator_title = _("Paid")
 
 	def validate(self):
+		if(not self.get('taxes_and_charges') and self.get('tax_category')):
+			default = frappe.db.get_value('Sales Taxes and Charges Template', {'company':self.company, 'is_default':1}, 'name')
+			self.taxes_and_charges = default
 		super(SalesInvoice, self).validate()
 		self.validate_auto_set_posting_time()
 

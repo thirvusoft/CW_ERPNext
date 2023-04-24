@@ -124,12 +124,47 @@ def _get_party_details(
 	set_contact_details(party_details, party, party_type)
 	set_other_values(party_details, party, party_type)
 	set_price_list(party_details, party, party_type, price_list, pos_profile)
+	## Cycle world customization start
+	# if doctype =="Sales Invoice":
+	user = frappe.session.user
+	user_per=frappe.get_value('User Permission',{'user':user,'allow':'Branch','is_default':1}, 'for_value')
+	company_user_per=frappe.get_value('User Permission',{'user':user,'allow':'Company','is_default':1}, 'for_value')
+	if (user_per or company_user_per) and party_address:
+		doctype="Company"
+		if(user_per):
+			doctype = "Branch"
+		branch_add=frappe.get_value("Dynamic Link",{"link_doctype": doctype, "link_name": user_per or company_user_per},"parent")
+		branch_state = None
+		if branch_add:
+			branch_state=frappe.get_value("Address",{'name':branch_add},"gst_state")
+		if branch_add and branch_state:
+			# branch_state=frappe.get_value("Address",{'name':branch_add},"gst_state")
+			# if party_address:
+			party_state=frappe.get_value("Address",{'name':party_address},"gst_state")
+			settings = frappe.get_single('Stock Settings')
+			if branch_state != party_state:
+				party_details["tax_category"]=settings.default_out_state_tax_category or "Out-State"
+			else:
+				party_details["tax_category"]=settings.default_in_state_tax_category or "In-State"
+		else:
+			party_details["tax_category"] = get_address_tax_category(
+					party.get("tax_category"),
+					party_address,
+					shipping_address if party_type != "Supplier" else party_address,)
+	else:
+		party_details["tax_category"] = get_address_tax_category(
+				party.get("tax_category"),
+				party_address,
+				shipping_address if party_type != "Supplier" else party_address,)
 
-	party_details["tax_category"] = get_address_tax_category(
-		party.get("tax_category"),
-		party_address,
-		shipping_address if party_type != "Supplier" else party_address,
-	)
+	# else:	 
+	# 	party_details["tax_category"] = get_address_tax_category(
+	# 		party.get("tax_category"),
+	# 		party_address,
+	# 		shipping_address if party_type != "Supplier" else party_address,
+	# 	)
+	## end
+
 
 	tax_template = set_taxes(
 		party.name,
@@ -197,15 +232,21 @@ def set_address_details(
 	# address display
 	party_details.address_display = get_address_display(party_details[billing_address_field])
 	# shipping address
-	if party_type in ["Customer", "Lead"]:
-		party_details.shipping_address_name = shipping_address or get_party_shipping_address(
-			party_type, party.name
-		)
-		party_details.shipping_address = get_address_display(party_details["shipping_address_name"])
-		if doctype:
-			party_details.update(
-				get_fetch_values(doctype, "shipping_address_name", party_details.shipping_address_name)
-			)
+
+	## CYCLE WORLD CUSTOMIZATION - START
+
+
+	# if party_type in ["Customer", "Lead"]:
+	# 	party_details.shipping_address_name = shipping_address or get_party_shipping_address(
+	# 		party_type, party.name
+	# 	)
+	# 	party_details.shipping_address = get_address_display(party_details["shipping_address_name"])
+	# 	if doctype:
+	# 		party_details.update(
+	# 			get_fetch_values(doctype, "shipping_address_name", party_details.shipping_address_name)
+	# 		)
+
+	## CYCLE WORLD CUSTOMIZATION - END
 
 	if company_address:
 		party_details.company_address = company_address

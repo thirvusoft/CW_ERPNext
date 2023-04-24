@@ -34,14 +34,11 @@
   },
   {
    "fieldname": "auth_token",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "read_only": 1
+   "fieldtype": "Data"
   },
   {
    "fieldname": "token_expiry",
    "fieldtype": "Datetime",
-   "hidden": 1,
    "read_only": 1
   },
   {
@@ -104,7 +101,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2022-07-17 14:57:50.783517",
+ "modified": "2023-04-03 16:24:28.820664",
  "modified_by": "Administrator",
  "module": "Regional",
  "name": "E Invoice Settings",

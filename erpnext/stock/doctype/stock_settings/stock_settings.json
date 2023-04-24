@@ -10,6 +10,8 @@
   "item_group",
   "stock_uom",
   "default_warehouse",
+  "default_in_state_tax_category",
+  "default_out_state_tax_category",
   "column_break_4",
   "valuation_method",
   "sample_retention_warehouse",
@@ -298,6 +300,18 @@
    "fieldname": "update_existing_price_list_rate",
    "fieldtype": "Check",
    "label": "Update Existing Price List Rate"
+  },
+  {
+   "fieldname": "default_in_state_tax_category",
+   "fieldtype": "Link",
+   "label": "Default In State Tax Category",
+   "options": "Tax Category"
+  },
+  {
+   "fieldname": "default_out_state_tax_category",
+   "fieldtype": "Link",
+   "label": "Default Out State Tax Category",
+   "options": "Tax Category"
   }
  ],
  "icon": "icon-cog",
@@ -305,7 +319,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2021-11-06 19:40:02.183592",
+ "modified": "2023-04-06 16:58:13.847853",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Settings",

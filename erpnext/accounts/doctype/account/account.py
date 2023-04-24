@@ -156,7 +156,7 @@ class Account(NestedSet):
 			if not parent_acc_name_map:
 				return
 
-			self.create_account_for_child_company(parent_acc_name_map, descendants, parent_acc_name)
+			# self.create_account_for_child_company(parent_acc_name_map, descendants, parent_acc_name)
 
 	def validate_group_or_ledger(self):
 		if self.get("__islocal"):

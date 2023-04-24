@@ -10,6 +10,7 @@
   "items_section",
   "naming_series",
   "stock_entry_type",
+  "is_opening",
   "outgoing_stock_entry",
   "purpose",
   "add_to_transit",
@@ -66,7 +67,6 @@
   "print_settings_col_break",
   "letter_head",
   "more_info",
-  "is_opening",
   "remarks",
   "col5",
   "per_transferred",
@@ -619,11 +619,10 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-05-02 05:21:39.060501",
+ "modified": "2023-04-11 14:19:07.211654",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry",
- "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {
@@ -690,7 +689,6 @@
  "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": [],
  "title_field": "stock_entry_type",
  "track_changes": 1
 }

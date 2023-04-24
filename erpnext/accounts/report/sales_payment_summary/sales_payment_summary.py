@@ -114,6 +114,9 @@ def get_conditions(filters):
 		conditions += " and a.owner = %(owner)s"
 	if filters.get("is_pos"):
 		conditions += " and a.is_pos = %(is_pos)s"
+	if filters.get("branch"):
+		branch = filters.get('branch')
+		conditions += f" and a.branch = '{branch}' "
 	return conditions
 
 

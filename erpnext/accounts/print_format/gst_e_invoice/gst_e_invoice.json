@@ -1,4 +1,5 @@
 {
+ "absolute_value": 0,
  "align_labels_right": 1,
  "creation": "2020-10-10 18:01:21.032914",
  "custom_format": 0,
@@ -11,8 +12,8 @@
  "html": "",
  "idx": 0,
  "line_breaks": 1,
- "modified": "2020-10-23 19:54:40.634936",
- "modified_by": "Administrator",
+ "modified": "2023-04-12 10:28:00.319910",
+ "modified_by": "shankar@thirvusoft.in",
  "module": "Accounts",
  "name": "GST E-Invoice",
  "owner": "Administrator",

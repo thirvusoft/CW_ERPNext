@@ -243,6 +243,8 @@ def get_other_conditions(conditions, values, args):
 		group_condition = _get_tree_conditions(args, parenttype, "`tabPricing Rule`")
 		if group_condition:
 			conditions += " and " + group_condition
+	if("Purchase" in args.get('doctype', "")):
+		conditions += """ and `tabPricing Rule`.buying = 1 """
 
 	if args.get("transaction_date"):
 		conditions += """ and %(transaction_date)s between ifnull(`tabPricing Rule`.valid_from, '2000-01-01')

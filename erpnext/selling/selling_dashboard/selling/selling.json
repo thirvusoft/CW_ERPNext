@@ -15,20 +15,28 @@
  ],
  "charts": [
   {
-   "chart": "Sales Order Trends",
+   "chart": "Top Customers (Current Month)",
    "width": "Full"
   },
   {
-   "chart": "Top Customers",
-   "width": "Half"
+   "chart": "Item-wise Annual Sales",
+   "width": "Full"
+  },
+  {
+   "chart": "Performing Franchise",
+   "width": "Full"
+  },
+  {
+   "chart": "Sales Order Trends",
+   "width": "Full"
   },
   {
    "chart": "Sales Order Analysis",
    "width": "Half"
   },
   {
-   "chart": "Item-wise Annual Sales",
-   "width": "Full"
+   "chart": "Mode of payment-wise received amt",
+   "width": "Half"
   }
  ],
  "creation": "2020-07-20 20:17:16.688162",
@@ -38,8 +46,8 @@
  "idx": 0,
  "is_default": 0,
  "is_standard": 1,
- "modified": "2020-07-22 15:31:22.299903",
- "modified_by": "Administrator",
+ "modified": "2023-04-12 23:59:54.901402",
+ "modified_by": "nithya@thirvusoft.in",
  "module": "Selling",
  "name": "Selling",
  "owner": "Administrator"

@@ -32,7 +32,8 @@
   "sales_update_frequency",
   "allow_multiple_items",
   "allow_against_multiple_purchase_orders",
-  "hide_tax_id"
+  "hide_tax_id",
+  "footer"
  ],
  "fields": [
   {
@@ -199,6 +200,11 @@
    "fieldtype": "Select",
    "label": "Contract Naming By",
    "options": "Party Name\nNaming Series"
+  },
+  {
+   "fieldname": "footer",
+   "fieldtype": "Text Editor",
+   "label": "Footer"
   }
  ],
  "icon": "fa fa-cog",
@@ -206,7 +212,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2022-03-28 12:18:06.768403",
+ "modified": "2023-04-04 10:35:43.850135",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Selling Settings",

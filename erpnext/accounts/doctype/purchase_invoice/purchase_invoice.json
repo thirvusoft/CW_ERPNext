@@ -13,10 +13,9 @@
   "section_break_4",
   "supplier",
   "supplier_name",
-  "column_break1",
   "bill_no",
+  "column_break1",
   "bill_date",
-  "apply_tds",
   "tax_withholding_category",
   "amended_from",
   "due_date",
@@ -25,6 +24,7 @@
   "posting_time",
   "set_posting_time",
   "company",
+  "apply_tds",
   "is_return",
   "tax_id",
   "is_paid",
@@ -70,6 +70,7 @@
   "pricing_rule_details",
   "pricing_rules",
   "raw_materials_supplied",
+  "net_total",
   "supplied_items",
   "section_break_26",
   "total_qty",
@@ -79,9 +80,12 @@
   "total",
   "column_break_71",
   "total_taxes_and_charges",
-  "net_total",
+  "column_break_73",
+  "discount_amount",
   "column_break_75",
-  "grand_total",
+  "additional_discount_percentage",
+  "col_disc",
+  "rounded_total",
   "total_net_weight",
   "taxes_section",
   "shipping_rule",
@@ -112,11 +116,9 @@
   "base_discount_amount",
   "additional_discount_account",
   "column_break_46",
-  "additional_discount_percentage",
-  "discount_amount",
   "column_break8",
   "rounding_adjustment",
-  "rounded_total",
+  "grand_total",
   "outstanding_amount",
   "column_break_109",
   "in_words",
@@ -532,6 +534,7 @@
    "description": "Sets 'Accepted Warehouse' in each row of the items table.",
    "fieldname": "set_warehouse",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Set Accepted Warehouse",
    "options": "Warehouse",
    "print_hide": 1
@@ -570,6 +573,7 @@
    "default": "1",
    "fieldname": "update_stock",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Update Stock",
    "print_hide": 1
   },
@@ -658,12 +662,12 @@
   {
    "fieldname": "net_total",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Net Total",
    "oldfieldname": "net_total_import",
    "oldfieldtype": "Currency",
    "options": "currency",
-   "print_hide": 1,
-   "read_only": 1
+   "print_hide": 1
   },
   {
    "fieldname": "total_net_weight",
@@ -811,7 +815,7 @@
    "label": "Additional Discount"
   },
   {
-   "default": "Grand Total",
+   "default": "Net Total",
    "fieldname": "apply_discount_on",
    "fieldtype": "Select",
    "label": "Apply Additional Discount On",
@@ -1496,13 +1500,21 @@
   {
    "fieldname": "column_break_75",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "col_disc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_73",
+   "fieldtype": "Column Break"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-03-21 14:29:57.524107",
+ "modified": "2023-04-18 11:45:49.194546",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",

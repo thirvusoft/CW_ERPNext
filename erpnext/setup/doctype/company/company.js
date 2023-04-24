@@ -274,7 +274,7 @@ erpnext.company.set_custom_query = function(frm, v) {
 }
 
 var disbale_coa_fields = function(frm, bool=true) {
-	frm.set_df_property("create_chart_of_accounts_based_on", "read_only", bool);
-	frm.set_df_property("chart_of_accounts", "read_only", bool);
-	frm.set_df_property("existing_company", "read_only", bool);
+	// frm.set_df_property("create_chart_of_accounts_based_on", "read_only", bool);
+	// frm.set_df_property("chart_of_accounts", "read_only", bool);
+	// frm.set_df_property("existing_company", "read_only", bool);
 }

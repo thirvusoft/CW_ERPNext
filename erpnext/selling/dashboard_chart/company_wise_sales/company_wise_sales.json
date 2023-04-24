@@ -1,0 +1,42 @@
+{
+ "aggregate_function_based_on": "base_net_total",
+ "based_on": "",
+ "chart_name": "Company-wise Sales",
+ "chart_type": "Group By",
+ "color": "#761ACB",
+ "creation": "2023-04-12 22:53:41.431610",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart",
+ "document_type": "Sales Invoice",
+ "dynamic_filters_json": "[]",
+ "filters_json": "[]",
+ "group_by_based_on": "company",
+ "group_by_type": "Sum",
+ "idx": 0,
+ "is_public": 0,
+ "is_standard": 1,
+ "last_synced_on": "2023-04-12 22:55:25.467775",
+ "modified": "2023-04-12 22:56:21.511315",
+ "modified_by": "nithya@thirvusoft.in",
+ "module": "Selling",
+ "name": "Company-wise Sales",
+ "number_of_groups": 0,
+ "owner": "nithya@thirvusoft.in",
+ "parent_document_type": "",
+ "roles": [
+  {
+   "role": "HO Admin"
+  },
+  {
+   "role": "Thirvu Admin"
+  }
+ ],
+ "source": "",
+ "time_interval": "Yearly",
+ "timeseries": 0,
+ "timespan": "Last Year",
+ "type": "Pie",
+ "use_report_chart": 0,
+ "value_based_on": "",
+ "y_axis": []
+}

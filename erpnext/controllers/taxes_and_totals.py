@@ -22,7 +22,7 @@ from erpnext.stock.get_item_details import _get_item_tax_template
 class calculate_taxes_and_totals(object):
 	def __init__(self, doc):
 		self.doc = doc
-		frappe.flags.round_off_applicable_accounts = []
+		frappe.flags.round_off_applicable_accounts = frappe.db.get_all('Account', filters={'name':['like', '%tcs%']}, pluck='name') + frappe.db.get_all('Account', filters={'name':['like', '%tds%']}, pluck='name')
 		get_round_off_applicable_accounts(self.doc.company, frappe.flags.round_off_applicable_accounts)
 		self.calculate()
 
@@ -1029,7 +1029,10 @@ def get_rounded_tax_amount(itemised_tax, precision):
 	# Rounding based on tax_amount precision
 	for taxes in itemised_tax.values():
 		for tax_account in taxes:
-			taxes[tax_account]["tax_amount"] = flt(taxes[tax_account]["tax_amount"], precision)
+			if('TDS' in tax_account or 'TCS' in tax_account):
+				taxes[tax_account]["tax_amount"] = round(taxes[tax_account]["tax_amount"])
+			else:
+				taxes[tax_account]["tax_amount"] = flt(taxes[tax_account]["tax_amount"], precision)
 
 
 class init_landed_taxes_and_totals(object):

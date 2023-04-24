@@ -27,7 +27,7 @@
    "width": "Half"
   },
   {
-   "chart": "Top Suppliers",
+   "chart": "Top Supplier View",
    "width": "Full"
   }
  ],
@@ -36,10 +36,10 @@
  "docstatus": 0,
  "doctype": "Dashboard",
  "idx": 0,
- "is_default": 1,
+ "is_default": 0,
  "is_standard": 1,
- "modified": "2020-07-22 12:48:38.112744",
- "modified_by": "Administrator",
+ "modified": "2023-04-12 16:54:58.521372",
+ "modified_by": "powerpedalsadmin@cycleworld.in",
  "module": "Buying",
  "name": "Buying",
  "owner": "Administrator"

@@ -602,6 +602,29 @@ $.extend(erpnext.item, {
 						});
 					  }
 				})
+				if(!common_reqd_attrs.length){
+					me.multiple_variant_dialog.hide();
+						frappe.call({
+							method: "erpnext.controllers.item_variant.enqueue_multiple_variant_creation",
+							args: {
+								"item": frm.doc.name,
+								"args": selected_attributes
+							},
+							callback: function(r) {
+								if (r.message==='queued') {
+									frappe.show_alert({
+										message: __("Variant creation has been queued."),
+										indicator: 'orange'
+									});
+								} else {
+									frappe.show_alert({
+										message: __("{0} variants created.", [r.message]),
+										indicator: 'green'
+									});
+								}
+							}
+						});
+				}
 				
 			});
 	
