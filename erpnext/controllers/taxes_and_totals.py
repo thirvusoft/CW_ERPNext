@@ -160,10 +160,10 @@ class calculate_taxes_and_totals(object):
 						else:
 							item.discount_amount = item.rate_with_margin - item.rate
 
-					elif flt(item.price_list_rate) > 0:
-						item.discount_amount = item.price_list_rate - item.rate
-				elif flt(item.price_list_rate) > 0 and not item.discount_amount:
-					item.discount_amount = item.price_list_rate - item.rate
+					# elif flt(item.price_list_rate) > 0:
+					# 	item.discount_amount = item.price_list_rate - item.rate
+				# elif flt(item.price_list_rate) > 0 and not item.discount_amount:
+				# 	item.discount_amount = item.price_list_rate - item.rate
 
 				item.net_rate = item.rate
 
@@ -1029,6 +1029,7 @@ def get_rounded_tax_amount(itemised_tax, precision):
 	# Rounding based on tax_amount precision
 	for taxes in itemised_tax.values():
 		for tax_account in taxes:
+			if(not tax_account):continue
 			if('TDS' in tax_account or 'TCS' in tax_account):
 				taxes[tax_account]["tax_amount"] = round(taxes[tax_account]["tax_amount"])
 			else:

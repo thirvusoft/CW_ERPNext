@@ -538,6 +538,11 @@ def get_qty_amount_data_for_cumulative(pr_doc, doc, items=None):
 
 def apply_pricing_rule_on_transaction(doc):
 	conditions = "apply_on = 'Transaction'"
+	if (doc.get('sales_type_link')):
+		apply_discount = frappe.db.get_value('Sales Type and Invoice Series', doc.get('sales_type_link'), 'apply_discount')
+		if(not apply_discount):
+			conditions += " and discount_amount = 0 and discount_percentage = 0 "
+	
 
 	values = {}
 	conditions = get_other_conditions(conditions, values, doc)

@@ -577,54 +577,172 @@ $.extend(erpnext.item, {
 						}
 						return
 					}
-
+			
 					if(itemsProcessed === array.length) {
-						me.multiple_variant_dialog.hide();
-						frappe.call({
-							method: "erpnext.controllers.item_variant.enqueue_multiple_variant_creation",
-							args: {
-								"item": frm.doc.name,
-								"args": selected_attributes
-							},
-							callback: function(r) {
-								if (r.message==='queued') {
-									frappe.show_alert({
-										message: __("Variant creation has been queued."),
-										indicator: 'orange'
-									});
-								} else {
-									frappe.show_alert({
-										message: __("{0} variants created.", [r.message]),
-										indicator: 'green'
-									});
-								}
+					
+						var variant_dialog = new frappe.ui.Dialog({
+							title: __("Item Price"),
+							fields: [
+								{
+									"label": __("Buying Rate"),
+									"fieldname": "buying_rate",
+									"fieldtype": "Currency",
+								},
+								{
+									"label": __("Transportation Cost"),
+									"fieldname": "transportation_cost",
+									"fieldtype": "Currency",
+								},
+								{
+									"label": __("Other Cost"),
+									"fieldname": "other_cost",
+									"fieldtype": "Currency",
+								},
+								{
+									
+									"fieldname": "column_break1",
+									"fieldtype": "Column Break",
+									
+								},
+								{
+									"label": __("Labour Cost"),
+									"fieldname": "labour_cost",
+									"fieldtype": "Currency",
+								},
+								{
+									"label": __("Margin"),
+									"fieldname": "margin",
+									"fieldtype": "Percent",
+								},
+								{
+									"label": __("Mrp"),
+									"fieldname": "mrp",
+									"fieldtype": "Currency",
+								},
+							],
+							primary_action: function() {
+							var cost = variant_dialog.get_values();
+							
+							
+							for (let key in cost) {
+								selected_attributes[key] = [cost[key]];
 							}
+						
+								frappe.call({
+									method: "erpnext.controllers.item_variant.enqueue_multiple_variant_creation",
+									args: {
+										"item": frm.doc.name,
+										"args": selected_attributes
+									},
+									callback: function(r) {
+										if (r.message==='queued') {
+											frappe.show_alert({
+												message: __("Variant creation has been queued."),
+												indicator: 'orange'
+											});
+										} else {
+											frappe.show_alert({
+												message: __("{0} variants created.", [r.message]),
+												indicator: 'green'
+											});
+										}
+										variant_dialog.hide();
+											me.multiple_variant_dialog.hide();
+									}
+								});
+								
+							},
+							primary_action_label: __('Create Variants')
 						});
-					  }
-				})
+						variant_dialog.$wrapper.css('z-index', parseInt(me.multiple_variant_dialog.$wrapper.css('z-index')) + 1); // Add this line to set the z-index of the variant dialog's wrapper element
+						variant_dialog.show();
+					}
+				});
+		
+			
+	
 				if(!common_reqd_attrs.length){
-					me.multiple_variant_dialog.hide();
-						frappe.call({
-							method: "erpnext.controllers.item_variant.enqueue_multiple_variant_creation",
-							args: {
-								"item": frm.doc.name,
-								"args": selected_attributes
+					
+					var variant_dialog = new frappe.ui.Dialog({
+						title: __("Item Price"),
+						fields: [
+							{
+								"label": __("Buying Rate"),
+								"fieldname": "buying_rate",
+								"fieldtype": "Currency",
 							},
-							callback: function(r) {
-								if (r.message==='queued') {
-									frappe.show_alert({
-										message: __("Variant creation has been queued."),
-										indicator: 'orange'
-									});
-								} else {
-									frappe.show_alert({
-										message: __("{0} variants created.", [r.message]),
-										indicator: 'green'
-									});
-								}
+							{
+								"label": __("Transportation Cost"),
+								"fieldname": "transportation_cost",
+								"fieldtype": "Currency",
+							},
+							{
+								"label": __("Other Cost"),
+								"fieldname": "other_cost",
+								"fieldtype": "Currency",
+							},
+							{
+								
+								"fieldname": "column_break1",
+								"fieldtype": "Column Break",
+								
+							},
+							{
+								"label": __("Labour Cost"),
+								"fieldname": "labour_cost",
+								"fieldtype": "Currency",
+							},
+							{
+								"label": __("Margin"),
+								"fieldname": "margin",
+								"fieldtype": "Percent",
+							},
+							{
+								"label": __("Mrp"),
+								"fieldname": "mrp",
+								"fieldtype": "Currency",
+							},
+						],
+						primary_action: function() {
+							
+							var cost = variant_dialog.get_values();
+							
+							
+							for (let key in cost) {
+								selected_attributes[key] = [cost[key]];
 							}
-						});
+							
+							frappe.call({
+								method: "erpnext.controllers.item_variant.enqueue_multiple_variant_creation",
+								args: {
+									"item": frm.doc.name,
+									"args": selected_attributes
+								},
+								callback: function(r) {
+									if (r.message==='queued') {
+										frappe.show_alert({
+											message: __("Variant creation has been queued."),
+											indicator: 'orange'
+										});
+									} else {
+										frappe.show_alert({
+											message: __("{0} variants created.", [r.message]),
+											indicator: 'green'
+										});
+											}
+											variant_dialog.hide();
+											me.multiple_variant_dialog.hide();
+								}
+								
+							});
+							
+						},
+						primary_action_label: __('Create Variants')
+					});
+					variant_dialog.show();
 				}
+						
+				
 				
 			});
 	

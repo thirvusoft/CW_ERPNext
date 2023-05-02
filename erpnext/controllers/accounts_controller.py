@@ -665,7 +665,7 @@ class AccountsController(TransactionBase):
 			if not tax_master_doctype:
 				tax_master_doctype = self.meta.get_field("taxes_and_charges").options
 
-			self.extend("taxes", get_taxes_and_charges(tax_master_doctype, self.get("taxes_and_charges")))
+			self.extend("taxes", get_taxes_and_charges(tax_master_doctype, self.get("taxes_and_charges", self.get('sales_type_link'))))
 
 	def set_other_charges(self):
 		self.set("taxes", [])
@@ -1895,7 +1895,7 @@ def get_tax_rate(account_head):
 
 
 @frappe.whitelist()
-def get_default_taxes_and_charges(master_doctype, tax_template=None, company=None):
+def get_default_taxes_and_charges(master_doctype, tax_template=None, company=None, sales_type=None):
 	if not company:
 		return {}
 
@@ -1908,12 +1908,12 @@ def get_default_taxes_and_charges(master_doctype, tax_template=None, company=Non
 
 	return {
 		"taxes_and_charges": default_tax,
-		"taxes": get_taxes_and_charges(master_doctype, default_tax),
+		"taxes": get_taxes_and_charges(master_doctype, default_tax, sales_type),
 	}
 
 
 @frappe.whitelist()
-def get_taxes_and_charges(master_doctype, master_name):
+def get_taxes_and_charges(master_doctype, master_name, sales_type = None):
 	if not master_name:
 		return
 	from frappe.model import default_fields
@@ -1921,9 +1921,13 @@ def get_taxes_and_charges(master_doctype, master_name):
 	tax_master = frappe.get_doc(master_doctype, master_name)
 
 	taxes_and_charges = []
+	apply_tcs = True
+	if(sales_type):
+		apply_tcs = frappe.db.get_value('Sales Type and Invoice Series', sales_type, 'apply_tcs')
 	for i, tax in enumerate(tax_master.get("taxes")):
 		tax = tax.as_dict()
-
+		if(not apply_tcs and "TCS" in tax.get('description')):
+			continue
 		for fieldname in default_fields:
 			if fieldname in tax:
 				del tax[fieldname]

@@ -8,6 +8,7 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 		let me = this;
 		frappe.flags.hide_serial_batch_dialog = true;
 		frappe.ui.form.on(this.frm.doctype + " Item", "rate", function(frm, cdt, cdn) {
+			return
 			var item = frappe.get_doc(cdt, cdn);
 			var has_margin_field = frappe.meta.has_field(cdt, 'margin_type');
 
@@ -40,7 +41,7 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 
 			cur_frm.cscript.set_gross_profit(item);
 			cur_frm.cscript.calculate_taxes_and_totals();
-			cur_frm.cscript.calculate_stock_uom_rate(frm, cdt, cdn);
+			cur_frm.cscript.calculate_stock_uom_rate(frm, cdt, cdn);	
 		});
 
 		frappe.ui.form.on(this.frm.cscript.tax_table, "rate", function(frm, cdt, cdn) {
@@ -457,17 +458,19 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 		var taxes_and_charges_field = frappe.meta.get_docfield(me.frm.doc.doctype, "taxes_and_charges",
 			me.frm.doc.name);
 
-		if (!this.frm.doc.taxes_and_charges && this.frm.doc.taxes && this.frm.doc.taxes.length > 0) {
+		if (!this.frm.doc.taxes_and_charges ) {
 			return;
 		}
-
+		console.log(me.frm.doc.sales_type_link)
+		console.log('me.frm.doc.sales_type_link')
 		if (taxes_and_charges_field) {
 			return frappe.call({
 				method: "erpnext.controllers.accounts_controller.get_default_taxes_and_charges",
 				args: {
 					"master_doctype": taxes_and_charges_field.options,
 					"tax_template": me.frm.doc.taxes_and_charges || "",
-					"company": me.frm.doc.company
+					"company": me.frm.doc.company,
+					"sales_type": me.frm.doc.sales_type_link
 				},
 				debounce: 2000,
 				callback: function(r) {
@@ -1812,7 +1815,8 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 				args: {
 					"master_doctype": frappe.meta.get_docfield(this.frm.doc.doctype, "taxes_and_charges",
 						this.frm.doc.name).options,
-					"master_name": this.frm.doc.taxes_and_charges
+					"master_name": this.frm.doc.taxes_and_charges,
+					"sales_type":this.frm.doc.sales_type_link
 				},
 				callback: function(r) {
 					if(!r.exc) {
