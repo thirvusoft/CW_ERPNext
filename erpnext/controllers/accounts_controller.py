@@ -1922,10 +1922,14 @@ def get_taxes_and_charges(master_doctype, master_name, sales_type = None):
 
 	taxes_and_charges = []
 	apply_tcs = True
+	tax_exclusive = False
 	if(sales_type):
 		apply_tcs = frappe.db.get_value('Sales Type and Invoice Series', sales_type, 'apply_tcs')
+		tax_exclusive = frappe.db.get_value('Sales Type and Invoice Series', sales_type, 'tax_exclusive')
 	for i, tax in enumerate(tax_master.get("taxes")):
 		tax = tax.as_dict()
+		if(tax_exclusive and tax.get('included_in_print_rate')):
+			tax['included_in_print_rate'] = 0
 		if(not apply_tcs and "TCS" in tax.get('description')):
 			continue
 		for fieldname in default_fields:
@@ -1933,7 +1937,6 @@ def get_taxes_and_charges(master_doctype, master_name, sales_type = None):
 				del tax[fieldname]
 
 		taxes_and_charges.append(tax)
-
 	return taxes_and_charges
 
 
