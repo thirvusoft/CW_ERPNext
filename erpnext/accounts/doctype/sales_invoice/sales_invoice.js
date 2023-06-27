@@ -11,24 +11,7 @@ erpnext.accounts.SalesInvoiceController = erpnext.selling.SellingController.exte
 		this._super(doc);
 	},
 
-	company: function() {
-		erpnext.accounts.dimensions.update_dimension(this.frm, this.frm.doctype);
-		let me = this;
-		if (this.frm.doc.company) {
-			frappe.call({
-				method:
-					"erpnext.accounts.party.get_party_account",
-				args: {
-					party_type: 'Customer',
-					party: this.frm.doc.customer,
-					company: this.frm.doc.company
-				},
-				callback: (response) => {
-					if (response) me.frm.set_value("debit_to", response.message);
-				},
-			});
-		}
-	},
+	
 
 	onload: function() {
 		var me = this;
@@ -292,7 +275,8 @@ erpnext.accounts.SalesInvoiceController = erpnext.selling.SellingController.exte
 				party_type: "Customer",
 				account: this.frm.doc.debit_to,
 				price_list: this.frm.doc.selling_price_list,
-				pos_profile: pos_profile
+				pos_profile: pos_profile,
+				party_address:  this.frm.doc.customer_address
 			}, function() {
 				me.apply_pricing_rule();
 			});
@@ -311,7 +295,9 @@ erpnext.accounts.SalesInvoiceController = erpnext.selling.SellingController.exte
 			});
 		}
 	},
-
+	customer_address: function(){
+		this.frm.trigger("customer")
+	},
 	make_inter_company_invoice: function() {
 		frappe.model.open_mapped_doc({
 			method: "erpnext.accounts.doctype.sales_invoice.sales_invoice.make_inter_company_purchase_invoice",

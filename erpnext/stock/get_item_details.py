@@ -831,6 +831,11 @@ def insert_item_price(args):
 				["name", "price_list_rate"],
 				as_dict=1,
 			)
+			item_company = frappe.db.get_value('Item', args.item_code, 'company')
+			mrp_price_list = frappe.db.get_single_value('Stock Settings', 'default_mrp_pricelist') or 'MRP'
+			if(args.price_list == mrp_price_list):
+				if(args.get('company') != 'TEAM CYCLE WORLD PVT. LTD.' and item_company != args.get('company')):
+					return
 			if item_price and item_price.name:
 				if item_price.price_list_rate != price_list_rate and frappe.db.get_single_value(
 					"Stock Settings", "update_existing_price_list_rate"

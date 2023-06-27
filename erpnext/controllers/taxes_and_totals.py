@@ -1030,10 +1030,10 @@ def get_rounded_tax_amount(itemised_tax, precision):
 	for taxes in itemised_tax.values():
 		for tax_account in taxes:
 			if(not tax_account):continue
-			if('TDS' in tax_account or 'TCS' in tax_account):
-				taxes[tax_account]["tax_amount"] = round(taxes[tax_account]["tax_amount"])
-			else:
-				taxes[tax_account]["tax_amount"] = flt(taxes[tax_account]["tax_amount"], precision)
+			# if('TDS' in tax_account or 'TCS' in tax_account):
+			# 	taxes[tax_account]["tax_amount"] = round(taxes[tax_account]["tax_amount"])
+			# else:
+			taxes[tax_account]["tax_amount"] = flt(taxes[tax_account]["tax_amount"], precision)
 
 
 class init_landed_taxes_and_totals(object):

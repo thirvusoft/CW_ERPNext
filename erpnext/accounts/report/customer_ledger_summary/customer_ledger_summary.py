@@ -285,6 +285,9 @@ class PartyLedgerSummaryReport(object):
 		if self.filters.company:
 			conditions.append("gle.company=%(company)s")
 
+		if(self.filters.get('branch')):
+			conditions.append("gle.branch=%(branch)s")
+
 		if self.filters.finance_book:
 			conditions.append("ifnull(finance_book,'') in (%(finance_book)s, '')")
 

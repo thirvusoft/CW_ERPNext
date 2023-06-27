@@ -316,7 +316,8 @@ def copy_attributes_to_variant(item, variant):
 		"valuation_rate",
 		"has_variants",
 		"attributes",
-		"item_group"
+		"item_group",
+		"gst_hsn_code"
 	]
 
 	if item.variant_based_on == "Manufacturer":

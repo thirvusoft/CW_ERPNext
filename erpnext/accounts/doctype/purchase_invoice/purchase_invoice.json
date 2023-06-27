@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_import": 1,
+ "allow_rename": 1,
  "autoname": "naming_series:",
  "creation": "2013-05-21 16:16:39",
  "doctype": "DocType",
@@ -1514,7 +1515,7 @@
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-04-18 11:45:49.194546",
+ "modified": "2023-06-27 11:02:07.625782",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",

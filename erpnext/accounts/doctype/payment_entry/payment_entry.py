@@ -79,7 +79,7 @@ class PaymentEntry(AccountsController):
 		self.validate_payment_against_negative_invoice()
 		self.validate_transaction_reference()
 		self.set_title()
-		self.set_remarks()
+		# self.set_remarks()
 		self.validate_duplicate_entry()
 		self.validate_payment_type_with_outstanding()
 		self.validate_allocated_amount()

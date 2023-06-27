@@ -110,7 +110,7 @@ def _get_party_details(
 
 	party = frappe.get_doc(party_type, party)
 	currency = party.get("default_currency") or currency or get_company_currency(company)
-
+	party_address_copy = party_address
 	party_address, shipping_address = set_address_details(
 		party_details,
 		party,
@@ -128,8 +128,8 @@ def _get_party_details(
 	# if doctype =="Sales Invoice":
 	user = frappe.session.user
 	user_per=frappe.get_value('User Permission',{'user':user,'allow':'Branch','is_default':1}, 'for_value')
-	company_user_per=frappe.get_value('User Permission',{'user':user,'allow':'Company','is_default':1}, 'for_value')
-	if (user_per or company_user_per) and party_address:
+	company_user_per=frappe.get_value('User',user, 'company')
+	if (user_per or company_user_per) and party_address_copy:
 		doctype="Company"
 		if(user_per):
 			doctype = "Branch"
@@ -140,7 +140,7 @@ def _get_party_details(
 		if branch_add and branch_state:
 			# branch_state=frappe.get_value("Address",{'name':branch_add},"gst_state")
 			# if party_address:
-			party_state=frappe.get_value("Address",{'name':party_address},"gst_state")
+			party_state=frappe.get_value("Address",{'name':party_address_copy},"gst_state")
 			settings = frappe.get_single('Stock Settings')
 			if branch_state != party_state:
 				party_details["tax_category"]=settings.default_out_state_tax_category or "Out-State"
@@ -219,12 +219,16 @@ def set_address_details(
 	company_address=None,
 	shipping_address=None,
 ):
+	
 	billing_address_field = (
 		"customer_address" if party_type == "Lead" else party_type.lower() + "_address"
 	)
-	party_details[billing_address_field] = party_address or get_default_address(
-		party_type, party.name
-	)
+	if(party_type != "Customer"):
+		party_details[billing_address_field] = party_address or get_default_address(
+			party_type, party.name
+		)
+	else:
+		party_details[billing_address_field] = ""
 	if doctype:
 		party_details.update(
 			get_fetch_values(doctype, billing_address_field, party_details[billing_address_field])
@@ -254,11 +258,14 @@ def set_address_details(
 		party_details.update(get_company_address(company))
 
 	if doctype and doctype in ["Delivery Note", "Sales Invoice", "Sales Order", "Quotation"]:
+		
 		if party_details.company_address:
 			party_details.update(
 				get_fetch_values(doctype, "company_address", party_details.company_address)
 			)
+		
 		get_regional_address_details(party_details, doctype, company)
+		
 
 	elif doctype and doctype in ["Purchase Invoice", "Purchase Order", "Purchase Receipt"]:
 		if shipping_address:
@@ -639,7 +646,6 @@ def get_address_tax_category(tax_category=None, billing_address=None, shipping_a
 	else:
 		if billing_address:
 			tax_category = frappe.db.get_value("Address", billing_address, "tax_category") or tax_category
-
 	return cstr(tax_category)
 
 

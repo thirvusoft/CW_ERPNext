@@ -859,7 +859,7 @@ def update_item_taxes(invoice, item):
 
 		else:
 			# TODO: other charges per item
-			if t.account_head == "TCS - "+frappe.get_value("Company",invoice.company,"abbr"):
+			if t.account_head == "TCS Payable - "+frappe.get_value("Company",invoice.company,"abbr"):
 				item_tax_detail = json.loads(t.item_wise_tax_detail).get(item['item_code'] or item['item_name'])
 				item["tcs_amount"] += item_tax_detail[1]
 	return item

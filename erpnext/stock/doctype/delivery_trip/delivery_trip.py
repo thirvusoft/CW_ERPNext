@@ -296,7 +296,6 @@ def get_default_address(out, name):
 		(name),
 		as_dict=1,
 	)
-
 	if shipping_addresses:
 		for out.shipping_address in shipping_addresses:
 			if out.shipping_address.is_shipping_address:

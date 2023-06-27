@@ -287,7 +287,7 @@ erpnext.accounts.PurchaseInvoice = erpnext.buying.BuyingController.extend({
 				party_type: "Supplier",
 				account: this.frm.doc.credit_to,
 				price_list: this.frm.doc.buying_price_list,
-				fetch_payment_terms_template: cint(!this.frm.doc.ignore_default_payment_terms_template)
+				fetch_payment_terms_template: cint(!this.frm.doc.ignore_default_payment_terms_template),
 			}, function() {
 				me.apply_pricing_rule();
 				me.frm.doc.apply_tds = me.frm.supplier_tds ? 1 : 0;
@@ -296,7 +296,12 @@ erpnext.accounts.PurchaseInvoice = erpnext.buying.BuyingController.extend({
 				me.frm.set_df_property("tax_withholding_category", "hidden", me.frm.supplier_tds ? 0 : 1);
 			})
 	},
-
+	shipping_address: function(){
+		this.frm.trigger("supplier")
+	},
+	billing_address: function(){
+		this.frm.trigger("supplier")
+	},
 	apply_tds: function(frm) {
 		var me = this;
 

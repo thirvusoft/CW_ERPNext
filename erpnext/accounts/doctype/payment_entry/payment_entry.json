@@ -53,6 +53,7 @@
   "reference_no",
   "column_break_23",
   "reference_date",
+  "remarks",
   "section_break_14",
   "get_outstanding_invoice",
   "references",
@@ -86,7 +87,6 @@
   "section_break_12",
   "status",
   "custom_remarks",
-  "remarks",
   "column_break_16",
   "letter_head",
   "print_heading",
@@ -484,8 +484,7 @@
    "fieldname": "remarks",
    "fieldtype": "Small Text",
    "label": "Remarks",
-   "no_copy": 1,
-   "read_only_depends_on": "eval:doc.custom_remarks == 0"
+   "no_copy": 1
   },
   {
    "fieldname": "column_break_16",
@@ -744,7 +743,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-03-04 19:34:33.098106",
+ "modified": "2023-06-06 11:52:12.894717",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",

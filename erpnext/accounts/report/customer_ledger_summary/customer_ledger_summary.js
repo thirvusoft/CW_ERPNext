@@ -95,3 +95,5 @@ frappe.query_reports["Customer Ledger Summary"] = {
 		}
 	]
 };
+
+erpnext.utils.add_dimensions('Customer Ledger Summary', 2);

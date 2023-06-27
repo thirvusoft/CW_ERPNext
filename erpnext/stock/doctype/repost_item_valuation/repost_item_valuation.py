@@ -64,6 +64,7 @@ class RepostItemValuation(Document):
 			return
 
 		repost(self)
+		execute_repost_item_valuation()
 
 	def before_cancel(self):
 		self.check_pending_repost_against_cancelled_transaction()

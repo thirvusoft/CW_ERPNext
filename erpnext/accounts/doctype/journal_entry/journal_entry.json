@@ -9,10 +9,11 @@
  "document_type": "Document",
  "engine": "InnoDB",
  "field_order": [
+  "section_break_1",
+  "naming_series",
   "entry_type_and_date",
   "title",
   "voucher_type",
-  "naming_series",
   "finance_book",
   "process_deferred_accounting",
   "reversal_of",
@@ -102,7 +103,6 @@
    "oldfieldtype": "Select",
    "options": "ACC-JV-.YYYY.-",
    "print_hide": 1,
-   "reqd": 1,
    "set_only_once": 1
   },
   {
@@ -533,13 +533,18 @@
    "label": "Process Deferred Accounting",
    "options": "Process Deferred Accounting",
    "read_only": 1
+  },
+  {
+   "fieldname": "section_break_1",
+   "fieldtype": "Section Break",
+   "hidden": 1
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 176,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-04-06 16:21:15.878294",
+ "modified": "2023-05-03 11:04:06.037458",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Journal Entry",

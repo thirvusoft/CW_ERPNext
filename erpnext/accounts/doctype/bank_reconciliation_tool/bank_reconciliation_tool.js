@@ -86,7 +86,8 @@ frappe.ui.form.on("Bank Reconciliation Tool", {
 					frm.doc.bank_statement_to_date
 				) {
 					frm.trigger("render_chart");
-					frm.trigger("render");
+					setTimeout(()=>{frm.trigger("render");}, 600)
+					
 					frappe.utils.scroll_to(
 						frm.get_field("reconciliation_tool_cards").$wrapper,
 						true,

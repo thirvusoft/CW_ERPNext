@@ -88,7 +88,7 @@ class BankTransaction(StatusUpdater):
 		clearance_date = self.date if not for_cancel else None
 		frappe.db.set_value(
 			"Sales Invoice Payment",
-			dict(parenttype=payment_entry.payment_document, parent=payment_entry.payment_entry),
+			dict(parenttype=payment_entry.payment_document, parent=payment_entry.payment_entry, mode_of_payment=payment_entry.mode_of_payment),
 			"clearance_date",
 			clearance_date,
 		)
@@ -140,7 +140,10 @@ def get_paid_amount(payment_entry, currency, bank_account):
 				paid_amount_field = (
 					"paid_amount" if doc.paid_from_account_currency == currency else "base_paid_amount"
 				)
-
+		if(payment_entry.payment_document == "Sales Invoice"):
+			payment_entry.payment_document = "Sales Invoice Payment"
+			payment_entry.payment_entry = {"mode_of_payment":payment_entry.get("mode_of_payment"), "parent":payment_entry.payment_entry}
+			paid_amount_field = "amount"
 		return frappe.db.get_value(
 			payment_entry.payment_document, payment_entry.payment_entry, paid_amount_field
 		)
@@ -183,6 +186,13 @@ def unclear_reference_payment(doctype, docname):
 			frappe.db.set_value(
 				"Sales Invoice Payment",
 				dict(parenttype=doc.payment_document, parent=doc.payment_entry),
+				"clearance_date",
+				None,
+			)
+		elif(doc.payment_document == "Sales Invoice"):
+			frappe.db.set_value(
+				"Sales Invoice Payment",
+				dict(parenttype=doc.payment_document, parent=doc.payment_entry, mode_of_payment=doc.get("mode_of_payment")),
 				"clearance_date",
 				None,
 			)

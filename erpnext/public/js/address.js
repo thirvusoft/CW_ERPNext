@@ -3,7 +3,7 @@
 
 frappe.ui.form.on("Address", {
 	is_your_company_address: function(frm) {
-		frm.clear_table('links');
+		// frm.clear_table('links');
 		if(frm.doc.is_your_company_address) {
 			frm.add_child('links', {
 				link_doctype: 'Company',

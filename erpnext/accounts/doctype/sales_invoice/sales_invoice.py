@@ -248,7 +248,7 @@ class SalesInvoice(SellingController):
 		set_account_for_mode_of_payment(self)
 
 	def on_submit(self):
-		self.validate_pos_paid_amount()
+		# self.validate_pos_paid_amount()
 
 		if not self.auto_repeat:
 			frappe.get_doc("Authorization Control").validate_approving_authority(
@@ -2184,15 +2184,19 @@ def make_inter_company_transaction(doctype, source_name, target_doc=None):
 			target_doc.is_internal_supplier = 1
 			target_doc.ignore_pricing_rule = 1
 			target_doc.buying_price_list = source_doc.selling_price_list
+			target_doc.bill_no = source_doc.name
+			target_doc.bill_date = source_doc.posting_date
+			target_doc.billing_address = source_doc.customer_address
+			target_doc.shipping_address = source_doc.shipping_address_name
 
 			# Invert Addresses
-			update_address(target_doc, "supplier_address", "address_display", source_doc.company_address)
-			update_address(
-				target_doc, "shipping_address", "shipping_address_display", source_doc.customer_address
-			)
-			update_address(
-				target_doc, "billing_address", "billing_address_display", source_doc.customer_address
-			)
+			# update_address(target_doc, "supplier_address", "address_display", source_doc.company_address)
+			# update_address(
+			# 	target_doc, "shipping_address", "shipping_address_display", source_doc.customer_address
+			# )
+			# update_address(
+			# 	target_doc, "billing_address", "billing_address_display", source_doc.customer_address
+			# )
 
 			if currency:
 				target_doc.currency = currency

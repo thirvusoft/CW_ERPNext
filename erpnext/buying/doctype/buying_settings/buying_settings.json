@@ -17,6 +17,7 @@
   "maintain_same_rate",
   "allow_multiple_items",
   "bill_for_rejected_quantity_in_purchase_invoice",
+  "tds_receivable_account",
   "subcontract",
   "backflush_raw_materials_of_subcontract_based_on",
   "column_break_11",
@@ -116,6 +117,13 @@
    "fieldname": "bill_for_rejected_quantity_in_purchase_invoice",
    "fieldtype": "Check",
    "label": "Bill for Rejected Quantity in Purchase Invoice"
+  },
+  {
+   "default": "0",
+   "fieldname": "tds_receivable_account",
+   "fieldtype": "Link",
+   "label": "Default TDS Receivable Account for TCW",
+   "options": "Account"
   }
  ],
  "icon": "fa fa-cog",
@@ -123,7 +131,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2021-09-08 19:26:23.548837",
+ "modified": "2023-06-27 17:46:15.627406",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Buying Settings",

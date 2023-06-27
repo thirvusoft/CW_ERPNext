@@ -9,7 +9,8 @@ frappe.query_reports["Stock Balance"] = {
 			"fieldtype": "Link",
 			"width": "80",
 			"options": "Company",
-			"default": frappe.defaults.get_default("company")
+			"default": frappe.defaults.get_user_permissions()['Company']?frappe.defaults.get_user_permissions()['Company'][0].doc:'',
+			"reqd":1
 		},
 		{
 			"fieldname":"from_date",

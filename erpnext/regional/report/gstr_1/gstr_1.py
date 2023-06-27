@@ -718,7 +718,7 @@ class Gstr1Report(object):
 def get_json(filters, report_name, data):
 	filters = json.loads(filters)
 	report_data = json.loads(data)
-	gstin = get_company_gstin_number(filters.get("company"), filters.get("company_address"))
+	gstin = filters.get("company_gstin") or get_company_gstin_number(filters.get("company"), filters.get("company_address"))
 
 	fp = "%02d%s" % (getdate(filters["to_date"]).month, getdate(filters["to_date"]).year)
 

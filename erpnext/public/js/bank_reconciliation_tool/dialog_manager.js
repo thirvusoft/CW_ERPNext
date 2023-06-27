@@ -49,6 +49,7 @@ erpnext.accounts.bank_reconciliation.DialogManager = class DialogManager {
 			args: {
 				bank_transaction_name: this.bank_transaction_name,
 				document_types: document_types,
+				mode_of_payment: this.dialog.get_value("mop")
 			},
 
 			callback: (result) => {
@@ -69,6 +70,7 @@ erpnext.accounts.bank_reconciliation.DialogManager = class DialogManager {
 							format_currency(row[3], row[9]),
 							row[6],
 							row[4],
+							row.length>=10?row[10]:""
 						]);
 					});
 					this.get_dt_columns();
@@ -80,6 +82,10 @@ erpnext.accounts.bank_reconciliation.DialogManager = class DialogManager {
 
 				}
 				this.dialog.show();
+				var selector = this.dialog.$wrapper.find(".dt-cell__content--header-0")
+				if(selector && selector.length){
+					selector[0].classList.add("hidden")
+				}
 			},
 		});
 	}
@@ -114,6 +120,11 @@ erpnext.accounts.bank_reconciliation.DialogManager = class DialogManager {
 
 			{
 				name: "Reference Number",
+				editable: false,
+				width: 140,
+			},
+			{
+				name: "Mode of Payment",
 				editable: false,
 				width: 140,
 			},
@@ -223,6 +234,13 @@ erpnext.accounts.bank_reconciliation.DialogManager = class DialogManager {
 				fieldtype: "Check",
 				label: "Loan Disbursement",
 				fieldname: "loan_disbursement",
+				onchange: () => this.update_options(),
+			},
+            {
+				fieldtype: "Link",
+				label: "Mode of Payment",
+				fieldname: "mop",
+                options: "Mode of Payment",
 				onchange: () => this.update_options(),
 			},
 			{
@@ -470,8 +488,12 @@ erpnext.accounts.bank_reconciliation.DialogManager = class DialogManager {
 				payment_doctype: x[2].content,
 				payment_name: x[3].content,
 				amount: x[5].content,
+				mode_of_payment: x[8].content,
+				posting_date: x[4].content
+
 			});
 		});
+		var out=this;
 		frappe.call({
 			method:
 				"erpnext.accounts.doctype.bank_reconciliation_tool.bank_reconciliation_tool.reconcile_vouchers",
@@ -480,13 +502,103 @@ erpnext.accounts.bank_reconciliation.DialogManager = class DialogManager {
 				vouchers: vouchers,
 			},
 			callback: (response) => {
-				const alert_string =
+				if(response.message.mismatch){
+					var posting_date = (vouchers&&vouchers.length)?vouchers[0].posting_date:""
+					var d = new frappe.ui.Dialog({
+						"title":`Amount Mismatch. Did you want to make Journal Entry?
+								 <p>Total Unallocated Amount: ${response.message.unallocated_amount}</p>
+								 <p>Total Amount Selected: ${response.message.selected_amount}</p>
+								 <p>Difference: ${response.message.differ_amount}</p>`,
+						fields:[
+							{fieldname:"company", label:"Company", fieldtype:"Link", hidden:1, default:this.company},
+							{fieldname:"posting_date", label:"Posting Date", fieldtype:"Date", reqd:1},
+							{fieldname:"account", label:"Account", fieldtype:"Link", options:"Account", reqd:1,
+							get_query: () => {
+								return {
+									filters: {
+										is_group: 0,
+										company: this.company,
+									},
+								};
+							}},
+							{fieldname:"amount", label:"Amount Differ", fieldtype:"Currency", default:response.message.differ_amount},
+							{fieldtype:"Column Break"},
+							{fieldname:"company_account", label:"Company Account", fieldtype:"Link", 
+								options:"Account", default:response.message.company_account, "read_only":1,
+								},
+							{fieldname:"bank_account", label:"Bank Account", fieldtype:"Link", 
+							options:"Account", default:response.message.bank_account, "read_only":1,
+							},
+							
+							{
+								fieldname: "party_type",
+								fieldtype: "Link",
+								label: "Party Type",
+								options: "DocType",
+								get_query: function () {
+									return {
+										filters: {
+											name: [
+												"in",
+												Object.keys(frappe.boot.party_account_types),
+											],
+										},
+									};
+								},
+							},
+							{
+							fieldname: "party",
+							fieldtype: "Dynamic Link",
+							label: "Party",
+							options: "party_type",
+							},
+							{
+								fieldname:"user_remark",
+								fieldtype:"Small Text",
+								label:"User Remarks"
+							}
+						],
+						primary_action_label:"Submit",
+						secondary_action_label:"Close",
+						secondary_action(){
+							d.hide()
+						},
+						primary_action(data){
+							frappe.call({
+								method:
+						"erpnext.accounts.doctype.bank_reconciliation_tool.bank_reconciliation_tool.make_differed_journal",
+
+								args:{
+									bank_transaction_name: out.bank_transaction.name,
+									vouchers: vouchers,
+									dialog_data: data
+								},
+								callback(r){
+									const alert_string =
+									"Bank Transaction " +
+									out.bank_transaction.name +
+									" Matched";
+									frappe.show_alert(alert_string);
+									out.update_dt_cards(r.message);
+									d.hide()
+									out.dialog.hide();
+								}
+							})
+						}
+					})
+					d.set_value("posting_date", posting_date)
+					d.show()
+				}
+				else{
+					const alert_string =
 					"Bank Transaction " +
 					this.bank_transaction.name +
 					" Matched";
-				frappe.show_alert(alert_string);
-				this.update_dt_cards(response.message);
-				this.dialog.hide();
+					frappe.show_alert(alert_string);
+					this.update_dt_cards(response.message);
+					this.dialog.hide();
+				}
+				
 			},
 		});
 	}

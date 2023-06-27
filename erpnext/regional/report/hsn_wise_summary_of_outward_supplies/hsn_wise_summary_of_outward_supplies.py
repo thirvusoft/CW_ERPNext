@@ -302,7 +302,7 @@ def get_json(filters, report_name, data):
 
 	fp = "%02d%s" % (getdate(filters["to_date"]).month, getdate(filters["to_date"]).year)
 
-	gst_json = {"version": "GST3.0.3", "hash": "hash", "gstin": gstin, "fp": fp}
+	gst_json = { "gstin": gstin,"fp": fp, "version": "GST3.1.5", "hash": "hash" }
 
 	gst_json["hsn"] = {"data": get_hsn_wise_json_data(filters, report_data)}
 

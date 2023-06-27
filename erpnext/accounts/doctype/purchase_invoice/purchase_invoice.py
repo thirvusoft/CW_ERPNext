@@ -1421,7 +1421,7 @@ class PurchaseInvoice(BuyingController):
 
 				if pi:
 					pi = pi[0][0]
-					frappe.throw(_("Supplier Invoice No exists in Purchase Invoice {0}").format(pi))
+					frappe.msgprint(_("Supplier Invoice No exists in Purchase Invoice {0}").format(pi))
 
 	def update_billing_status_in_pr(self, update_modified=True):
 		updated_pr = []
@@ -1485,12 +1485,23 @@ class PurchaseInvoice(BuyingController):
 			return
 
 		accounts = []
+		ts_tcw_rows_to_add = []
 		for d in self.taxes:
 			if d.account_head == tax_withholding_details.get("account_head"):
 				d.update(tax_withholding_details)
+				receivable_acc = frappe.db.get_value("Company", self.company, "tds_receivable_account")
+				if(receivable_acc):
+					add_or_deduct = {"Deduct":"Add", "Add":"Deduct"}
+					new_row = d.as_dict()
+					new_row.update({"account_head": receivable_acc, "name":None, "idx":None, "add_deduct_tax":add_or_deduct[d.add_deduct_tax]})
+					ts_tcw_rows_to_add.append(new_row)
 
 			accounts.append(d.account_head)
-
+		
+		if(self.taxes):
+			for i in ts_tcw_rows_to_add:
+				if(i["account_head"] not in accounts):
+					self.append("taxes", i)
 		if not accounts or tax_withholding_details.get("account_head") not in accounts:
 			self.append("taxes", tax_withholding_details)
 

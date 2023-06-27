@@ -8,6 +8,9 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 		let me = this;
 		frappe.flags.hide_serial_batch_dialog = true;
 		frappe.ui.form.on(this.frm.doctype + " Item", "rate", function(frm, cdt, cdn) {
+			cur_frm.cscript.set_gross_profit(item);
+			cur_frm.cscript.calculate_taxes_and_totals();
+			cur_frm.cscript.calculate_stock_uom_rate(frm, cdt, cdn);
 			return
 			var item = frappe.get_doc(cdt, cdn);
 			var has_margin_field = frappe.meta.has_field(cdt, 'margin_type');
@@ -39,9 +42,9 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 			}
 			item.base_rate_with_margin = item.rate_with_margin * flt(frm.doc.conversion_rate);
 
-			cur_frm.cscript.set_gross_profit(item);
-			cur_frm.cscript.calculate_taxes_and_totals();
-			cur_frm.cscript.calculate_stock_uom_rate(frm, cdt, cdn);	
+			// cur_frm.cscript.set_gross_profit(item);
+			// cur_frm.cscript.calculate_taxes_and_totals();
+			// cur_frm.cscript.calculate_stock_uom_rate(frm, cdt, cdn);	
 		});
 
 		frappe.ui.form.on(this.frm.cscript.tax_table, "rate", function(frm, cdt, cdn) {
@@ -830,6 +833,24 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 
 	company: function() {
 		var me = this;
+		if (this.frm.doc.doctype == "Sales Invoice"){
+			erpnext.accounts.dimensions.update_dimension(this.frm, this.frm.doctype);
+			if (this.frm.doc.company) {
+				frappe.call({
+					method:
+						"erpnext.accounts.party.get_party_account",
+					args: {
+						party_type: 'Customer',
+						party: this.frm.doc.customer,
+						company: this.frm.doc.company
+					},
+					callback: (response) => {
+						if (response) me.frm.set_value("debit_to", response.message);
+					},
+				});
+			}
+		}
+		
 		var set_pricing = function() {
 			if(me.frm.doc.company && me.frm.fields_dict.currency) {
 				var company_currency = me.get_company_currency();

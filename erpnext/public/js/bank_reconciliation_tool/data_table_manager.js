@@ -3,6 +3,7 @@ frappe.provide("erpnext.accounts.bank_reconciliation");
 erpnext.accounts.bank_reconciliation.DataTableManager = class DataTableManager {
 	constructor(opts) {
 		Object.assign(this, opts);
+		this.cards_manager = opts.cards_manager
 		this.dialog_manager = new erpnext.accounts.bank_reconciliation.DialogManager(
 			this.company,
 			this.bank_account

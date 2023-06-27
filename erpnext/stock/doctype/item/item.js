@@ -584,6 +584,36 @@ $.extend(erpnext.item, {
 							title: __("Item Price"),
 							fields: [
 								{
+									"label": __("HSN"),
+									"fieldname": "gst_hsn_code",
+									"fieldtype": "Link",
+									"options": 'GST HSN Code',
+									onchange: function(){
+										var hsn = variant_dialog.get_value("gst_hsn_code")
+										if(hsn){
+											frappe.db.get_value("GST HSN Code", hsn, "tax_percentage").then((r)=>{
+												if(r && r.message){
+													variant_dialog.set_value("tax_percentage", r.message.tax_percentage)
+												}
+												else{
+													variant_dialog.set_value("tax_percentage", "")
+												}
+											})
+										}
+										else{
+											variant_dialog.set_value("tax_percentage", "")
+										}
+									}
+								},
+								{'fieldtype':'Column Break'},
+								{
+									"label": __("Tax %"),
+									"fieldname": "tax_percentage",
+									"fieldtype": "Link",
+									"options": 'Tax Percentage',
+								},
+								{'fieldtype':'Section Break'},
+								{
 									"label": __("Buying Rate"),
 									"fieldname": "buying_rate",
 									"fieldtype": "Currency",
@@ -666,6 +696,36 @@ $.extend(erpnext.item, {
 					var variant_dialog = new frappe.ui.Dialog({
 						title: __("Item Price"),
 						fields: [
+							{
+								"label": __("HSN"),
+								"fieldname": "gst_hsn_code",
+								"fieldtype": "Link",
+								"options": 'GST HSN Code',
+								onchange: function(){
+									var hsn = variant_dialog.get_value("gst_hsn_code")
+									if(hsn){
+										frappe.db.get_value("GST HSN Code", hsn, "tax_percentage").then((r)=>{
+											if(r && r.message){
+												variant_dialog.set_value("tax_percentage", r.message.tax_percentage)
+											}
+											else{
+												variant_dialog.set_value("tax_percentage", "")
+											}
+										})
+									}
+									else{
+										variant_dialog.set_value("tax_percentage", "")
+									}
+								}
+							},
+							{'fieldtype':'Column Break'},
+							{
+								"label": __("Tax %"),
+								"fieldname": "tax_percentage",
+								"fieldtype": "Link",
+								"options": 'Tax Percentage'
+							},
+							{'fieldtype':'Section Break'},
 							{
 								"label": __("Buying Rate"),
 								"fieldname": "buying_rate",

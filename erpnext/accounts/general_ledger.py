@@ -220,7 +220,9 @@ def save_entries(gl_map, adv_adj, update_outstanding, from_repost=False):
 		check_freezing_date(gl_map[0]["posting_date"], adv_adj)
 
 	for entry in gl_map:
-		make_entry(entry, adv_adj, update_outstanding, from_repost)
+		# print(f"""{entry.account}  {entry.voucher_no}  {entry.credit}   {entry.debit}""")
+		if (entry.debit or entry.credit):
+			make_entry(entry, adv_adj, update_outstanding, from_repost)
 
 
 def make_entry(args, adv_adj, update_outstanding, from_repost=False):
