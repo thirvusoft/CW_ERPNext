@@ -1485,30 +1485,34 @@ class PurchaseInvoice(BuyingController):
 			return
 
 		accounts = []
-		ts_tcw_rows_to_add = []
+		ts_tcw_rows_to_add=None
+		receivable_acc = frappe.db.get_value("Company", self.company, "tds_receivable_account")
+		if(receivable_acc):
+			import copy
+			ts_tcw_rows_to_add = copy.deepcopy(tax_withholding_details)
+			add_or_deduct = {"Deduct":"Add", "Add":"Deduct"}
+			ts_tcw_rows_to_add.update({"account_head": receivable_acc, "name":None, "idx":None, "added_by_thirvu":1, 
+			      "add_deduct_tax":add_or_deduct[tax_withholding_details["add_deduct_tax"]] if tax_withholding_details.get("add_deduct_tax") else "Add"})
+
 		for d in self.taxes:
 			if d.account_head == tax_withholding_details.get("account_head"):
 				d.update(tax_withholding_details)
-				receivable_acc = frappe.db.get_value("Company", self.company, "tds_receivable_account")
-				if(receivable_acc):
-					add_or_deduct = {"Deduct":"Add", "Add":"Deduct"}
-					new_row = d.as_dict()
-					new_row.update({"account_head": receivable_acc, "name":None, "idx":None, "add_deduct_tax":add_or_deduct[d.add_deduct_tax]})
-					ts_tcw_rows_to_add.append(new_row)
-
+			if ts_tcw_rows_to_add and d.account_head == ts_tcw_rows_to_add.get("account_head"):
+				del ts_tcw_rows_to_add["idx"]
+				del ts_tcw_rows_to_add["name"]
+				d.update(ts_tcw_rows_to_add)
 			accounts.append(d.account_head)
+
 		
-		if(self.taxes):
-			for i in ts_tcw_rows_to_add:
-				if(i["account_head"] not in accounts):
-					self.append("taxes", i)
 		if not accounts or tax_withholding_details.get("account_head") not in accounts:
 			self.append("taxes", tax_withholding_details)
-
+			
+		if(self.taxes and ts_tcw_rows_to_add and receivable_acc and receivable_acc not in accounts):
+			self.append("taxes", ts_tcw_rows_to_add)
 		to_remove = [
 			d
 			for d in self.taxes
-			if not d.tax_amount and d.account_head == tax_withholding_details.get("account_head")
+			if not d.tax_amount and (d.account_head == tax_withholding_details.get("account_head") or d.get("added_by_thirvu") == 1)
 		]
 
 		for d in to_remove:

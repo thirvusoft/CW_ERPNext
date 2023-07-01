@@ -665,7 +665,7 @@ class AccountsController(TransactionBase):
 			if not tax_master_doctype:
 				tax_master_doctype = self.meta.get_field("taxes_and_charges").options
 
-			self.extend("taxes", get_taxes_and_charges(tax_master_doctype, self.get("taxes_and_charges", self.get('sales_type_link'))))
+			self.extend("taxes", get_taxes_and_charges(tax_master_doctype, self.get("taxes_and_charges"), self.get('sales_type_link'), self.get('customer_group')))
 
 	def set_other_charges(self):
 		self.set("taxes", [])
@@ -1895,7 +1895,7 @@ def get_tax_rate(account_head):
 
 
 @frappe.whitelist()
-def get_default_taxes_and_charges(master_doctype, tax_template=None, company=None, sales_type=None):
+def get_default_taxes_and_charges(master_doctype, tax_template=None, company=None, sales_type=None, customer_group=None):
 	if not company:
 		return {}
 
@@ -1908,12 +1908,12 @@ def get_default_taxes_and_charges(master_doctype, tax_template=None, company=Non
 
 	return {
 		"taxes_and_charges": default_tax,
-		"taxes": get_taxes_and_charges(master_doctype, default_tax, sales_type),
+		"taxes": get_taxes_and_charges(master_doctype, default_tax, sales_type, customer_group),
 	}
 
 
 @frappe.whitelist()
-def get_taxes_and_charges(master_doctype, master_name, sales_type = None):
+def get_taxes_and_charges(master_doctype, master_name, sales_type = None, customer_group=None):
 	if not master_name:
 		return
 	from frappe.model import default_fields
@@ -1923,8 +1923,11 @@ def get_taxes_and_charges(master_doctype, master_name, sales_type = None):
 	taxes_and_charges = []
 	apply_tcs = True
 	tax_exclusive = False
+	if(customer_group):
+		apply_tcs = frappe.db.get_value('Customer Group', customer_group, 'apply_tcs')
 	if(sales_type):
-		apply_tcs = frappe.db.get_value('Sales Type and Invoice Series', sales_type, 'apply_tcs')
+		if(apply_tcs):
+			apply_tcs = frappe.db.get_value('Sales Type and Invoice Series', sales_type, 'apply_tcs')
 		tax_exclusive = frappe.db.get_value('Sales Type and Invoice Series', sales_type, 'tax_exclusive')
 	for i, tax in enumerate(tax_master.get("taxes")):
 		tax = tax.as_dict()

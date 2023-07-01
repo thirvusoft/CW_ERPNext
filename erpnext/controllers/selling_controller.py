@@ -100,7 +100,7 @@ class SellingController(StockController):
 			)
 
 		if self.get("taxes_and_charges"):
-			taxes = get_taxes_and_charges("Sales Taxes and Charges Template", self.taxes_and_charges, self.get('sales_type_link'))
+			taxes = get_taxes_and_charges("Sales Taxes and Charges Template", self.taxes_and_charges, self.get('sales_type_link'), self.get("customer_group"))
 			self.set("taxes", [])
 			for tax in taxes:
 				self.append("taxes", tax)

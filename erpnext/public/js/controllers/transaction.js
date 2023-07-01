@@ -464,8 +464,6 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 		if (!this.frm.doc.taxes_and_charges ) {
 			return;
 		}
-		console.log(me.frm.doc.sales_type_link)
-		console.log('me.frm.doc.sales_type_link')
 		if (taxes_and_charges_field) {
 			return frappe.call({
 				method: "erpnext.controllers.accounts_controller.get_default_taxes_and_charges",
@@ -473,7 +471,8 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 					"master_doctype": taxes_and_charges_field.options,
 					"tax_template": me.frm.doc.taxes_and_charges || "",
 					"company": me.frm.doc.company,
-					"sales_type": me.frm.doc.sales_type_link
+					"sales_type": me.frm.doc.sales_type_link,
+					"customer_group":me.frm.doc.customer_group
 				},
 				debounce: 2000,
 				callback: function(r) {
@@ -1837,7 +1836,8 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 					"master_doctype": frappe.meta.get_docfield(this.frm.doc.doctype, "taxes_and_charges",
 						this.frm.doc.name).options,
 					"master_name": this.frm.doc.taxes_and_charges,
-					"sales_type":this.frm.doc.sales_type_link
+					"sales_type":this.frm.doc.sales_type_link,
+					"customer_group":me.frm.doc.customer_group
 				},
 				callback: function(r) {
 					if(!r.exc) {

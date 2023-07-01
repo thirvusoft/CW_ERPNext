@@ -228,7 +228,7 @@ def set_address_details(
 			party_type, party.name
 		)
 	else:
-		party_details[billing_address_field] = ""
+		party_details[billing_address_field] = party_address
 	if doctype:
 		party_details.update(
 			get_fetch_values(doctype, billing_address_field, party_details[billing_address_field])
@@ -642,10 +642,10 @@ def get_address_tax_category(tax_category=None, billing_address=None, shipping_a
 	)
 	if addr_tax_category_from == "Shipping Address":
 		if shipping_address:
-			tax_category = frappe.db.get_value("Address", shipping_address, "tax_category") or tax_category
+			tax_category = tax_category or frappe.db.get_value("Address", shipping_address, "tax_category")
 	else:
 		if billing_address:
-			tax_category = frappe.db.get_value("Address", billing_address, "tax_category") or tax_category
+			tax_category = tax_category or frappe.db.get_value("Address", billing_address, "tax_category")
 	return cstr(tax_category)
 
 

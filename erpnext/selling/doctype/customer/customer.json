@@ -34,11 +34,11 @@
   "is_internal_customer",
   "represents_company",
   "allowed_to_transact_section",
-  "default_price_list",
   "companies",
   "currency_and_price_list",
   "default_currency",
   "column_break_14",
+  "default_price_list",
   "address_contacts",
   "address_html",
   "website",
@@ -517,7 +517,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2023-06-26 14:09:11.764222",
+ "modified": "2023-07-01 12:39:28.794887",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Customer",

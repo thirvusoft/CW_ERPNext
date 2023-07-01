@@ -90,6 +90,7 @@
   "column_break_81",
   "total_taxes_and_charges",
   "col1",
+  "rounded_total",
   "grand_total",
   "outstanding_amount",
   "column_break_87",
@@ -126,7 +127,6 @@
   "base_rounded_total",
   "base_in_words",
   "rounding_adjustment",
-  "rounded_total",
   "column_break5",
   "in_words",
   "total_advance",
@@ -1184,8 +1184,10 @@
   },
   {
    "bold": 1,
+   "default": "0",
    "fieldname": "grand_total",
    "fieldtype": "Currency",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "in_list_view": 1,
@@ -2082,7 +2084,7 @@
    "link_fieldname": "consolidated_invoice"
   }
  ],
- "modified": "2023-06-26 15:26:36.155775",
+ "modified": "2023-06-30 13:14:53.964263",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice",
