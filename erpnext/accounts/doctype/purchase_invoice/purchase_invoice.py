@@ -303,7 +303,7 @@ class PurchaseInvoice(BuyingController):
 							frappe.bold(item.expense_account),
 							frappe.bold(item.warehouse),
 						)
-						frappe.msgprint(msg, title=_("Expense Head Changed"))
+						# frappe.msgprint(msg, title=_("Expense Head Changed"))
 					try:
 						item.expense_account = warehouse_account[item.warehouse]["account"]
 					except:

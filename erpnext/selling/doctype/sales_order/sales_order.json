@@ -1555,12 +1555,11 @@
    "fieldtype": "Column Break"
   }
  ],
- "hide_toolbar": 1,
  "icon": "fa fa-file-text",
  "idx": 105,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-07-01 11:40:28.538302",
+ "modified": "2023-07-01 19:02:11.400205",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order",

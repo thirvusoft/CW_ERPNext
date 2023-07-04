@@ -8,11 +8,12 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 		let me = this;
 		frappe.flags.hide_serial_batch_dialog = true;
 		frappe.ui.form.on(this.frm.doctype + " Item", "rate", function(frm, cdt, cdn) {
+			var item = frappe.get_doc(cdt, cdn);
 			cur_frm.cscript.set_gross_profit(item);
 			cur_frm.cscript.calculate_taxes_and_totals();
 			cur_frm.cscript.calculate_stock_uom_rate(frm, cdt, cdn);
 			return
-			var item = frappe.get_doc(cdt, cdn);
+			
 			var has_margin_field = frappe.meta.has_field(cdt, 'margin_type');
 
 			frappe.model.round_floats_in(item, ["rate", "price_list_rate"]);
@@ -609,12 +610,12 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 								},
 								() => {
 									// for internal customer instead of pricing rule directly apply valuation rate on item
-									if (me.frm.doc.is_internal_customer || me.frm.doc.is_internal_supplier) {
-										me.get_incoming_rate(item, me.frm.posting_date, me.frm.posting_time,
-											me.frm.doc.doctype, me.frm.doc.company);
-									} else {
+									// if (me.frm.doc.is_internal_customer || me.frm.doc.is_internal_supplier) {
+									// 	me.get_incoming_rate(item, me.frm.posting_date, me.frm.posting_time,
+									// 		me.frm.doc.doctype, me.frm.doc.company);
+									// } else {
 										me.frm.script_manager.trigger("price_list_rate", cdt, cdn);
-									}
+									// }
 								},
 								() => {
 									if (me.frm.doc.is_internal_customer || me.frm.doc.is_internal_supplier) {

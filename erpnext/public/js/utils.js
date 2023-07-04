@@ -479,6 +479,7 @@ erpnext.utils.update_child_items = function(opts) {
 		fieldname:"item_code",
 		options: 'Item',
 		in_list_view: 1,
+		columns:4,
 		read_only: 0,
 		disabled: 0,
 		label: __('Item Code'),
@@ -548,14 +549,14 @@ erpnext.utils.update_child_items = function(opts) {
 		fields.splice(2, 0, {
 			fieldtype: 'Date',
 			fieldname: frm.doc.doctype == 'Sales Order' ? "delivery_date" : "schedule_date",
-			in_list_view: 1,
+			in_list_view: 0,
 			label: frm.doc.doctype == 'Sales Order' ? __("Delivery Date") : __("Reqd by date"),
-			reqd: 1
+			reqd: 1,
 		})
 		fields.splice(3, 0, {
 			fieldtype: 'Float',
 			fieldname: "conversion_factor",
-			in_list_view: 1,
+			in_list_view: 0,
 			label: __("Conversion Factor"),
 			precision: get_precision('conversion_factor')
 		})
@@ -563,6 +564,7 @@ erpnext.utils.update_child_items = function(opts) {
 
 	const dialog = new frappe.ui.Dialog({
 		title: __("Update Items"),
+		size:"extra-large",
 		fields: [
 			{
 				fieldname: "trans_items",
