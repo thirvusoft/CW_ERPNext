@@ -327,14 +327,16 @@ def get_hsn_wise_json_data(filters, report_data):
 	count = 1
 
 	for hsn in report_data:
+		if(hsn.get("gst_hsn_code") == "Total"):
+			continue
 		row = {
 			"num": count,
 			"hsn_sc": hsn.get("gst_hsn_code"),
 			"desc": hsn.get("description"),
 			"uqc": hsn.get("stock_uom").upper(),
 			"qty": hsn.get("stock_qty"),
-			"rt": flt(hsn.get("tax_rate"), 2),
-			"txval": flt(hsn.get("taxable_amount", 2)),
+			"rt": round(hsn.get("tax_rate"), 2),
+			"txval": round(hsn.get("taxable_amount", 2), 2),
 			"iamt": 0.0,
 			"camt": 0.0,
 			"samt": 0.0,

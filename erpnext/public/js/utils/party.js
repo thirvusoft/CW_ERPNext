@@ -60,6 +60,9 @@ erpnext.utils.get_party_details = function(frm, method, args, callback) {
 		if (!args.company_address && frm.doc.company_address) {
 			args.company_address = frm.doc.company_address;
 		}
+		if(!args.party_address && frm.doc.customer_address){
+			args.party_address = frm.doc.customer_address
+		}
 	}
 
 	if (in_list(PURCHASE_DOCTYPES, frm.doc.doctype)) {

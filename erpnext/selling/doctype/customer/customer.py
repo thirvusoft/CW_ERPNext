@@ -21,6 +21,7 @@ from frappe.utils.user import get_users_with_role
 
 from erpnext.accounts.party import (  # noqa
 	get_dashboard_info,
+	get_party_account,
 	get_timeline_data,
 	validate_party_accounts,
 )
@@ -497,10 +498,16 @@ def get_customer_list(doctype, txt, searchfield, start, page_len, filters=None):
 
 
 def check_credit_limit(customer, company, name=None, ignore_outstanding_sales_order=False, extra_amount=0):
+	from erpnext.accounts.utils import get_outstanding_invoices
+
 	# branch wise credit limit
 	if not name:
 		return 
 	credit_limit = get_credit_limit_brand_wise(customer, company, name=None)
+	tot_outstanding = sum([i.outstanding_amount for i in get_outstanding_invoices("Customer", customer, get_party_account("Customer", customer, company)) if i.get("voucher_type") != "Sales Invoice"])
+	for i in credit_limit:
+		if(i.get("company") == company and not i.get("branch")):
+			i['current_credit'] = (i.get("current_credit") or 0) + tot_outstanding
 	message = ''
 	for i in credit_limit:
 		if i['credit'] > 0 and flt(i['current_credit']) > i['credit']:
@@ -716,10 +723,9 @@ def get_credit_limit(customer, company):
 
 	return flt(credit_limit)
 # branch wise credit limit
-def get_credit_limit_brand_wise(customer, company, name=None):
-	credit_limit = None
+def get_credit_limit_brand_wise(customer, company, name=None, credit_limit=[]):
 
-	if customer:
+	if customer and not credit_limit:
 		credit_limit = frappe.db.get_all(
 			"Customer Credit Limit",
 			filters={"parent": customer, "parenttype": "Customer", "company": company},
@@ -741,11 +747,11 @@ def get_credit_limit_brand_wise(customer, company, name=None):
 	creditCompany = ''
 	if credit_limit:
 		for credit in credit_limit:
-			if credit.brand != None:
+			if credit.brand:
 				credit_value.append({"brand":credit.brand,"credit":credit.credit_limit,'current_credit':0})
 				brand.append(credit.brand)
 			else:
-				if credit.company and credit.brand == None:
+				if credit.company and not credit.brand:
 					credit_value.append({"company":credit.company,"credit":credit.credit_limit,'current_credit':0})
 					creditCompany = credit.company
 	
@@ -757,11 +763,12 @@ def get_credit_limit_brand_wise(customer, company, name=None):
 	if name:
 		if name not in outstand_invoice:
 			outstand_invoice.append(name)
-	paid_amount = sum(frappe.db.get_all(
+	paid_amount = frappe.db.get_all(
 			"Sales Invoice",
 			filters={"customer": customer,"company": company,"outstanding_amount":['>',0],"docstatus":1},
-			pluck="paid_amount"
-		))
+			fields=["rounded_total", "outstanding_amount"]
+		)
+	paid_amount = sum([(i['rounded_total'] - i['outstanding_amount']) for i in paid_amount])
 	companyCredit = 0
 	for i in outstand_invoice:
 		sales_invoice = frappe.get_doc("Sales Invoice",i)

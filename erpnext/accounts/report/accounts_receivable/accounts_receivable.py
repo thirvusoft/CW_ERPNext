@@ -920,7 +920,7 @@ class ReceivablePayableReport(object):
 				options="Contact",
 			)
 
-		self.add_column(label=_("Cost Center"), fieldname="cost_center", fieldtype="Data")
+		self.add_column(label=_("Cost Center"), fieldname="cost_center", fieldtype="Data", hidden=1)
 		self.add_column(label=_("Voucher Type"), fieldname="voucher_type", fieldtype="Data")
 		self.add_column(
 			label=_("Voucher No"),
@@ -989,7 +989,7 @@ class ReceivablePayableReport(object):
 				options="Supplier Group",
 			)
 
-	def add_column(self, label, fieldname=None, fieldtype="Currency", options=None, width=120):
+	def add_column(self, label, fieldname=None, fieldtype="Currency", options=None, width=120, hidden=0):
 		if not fieldname:
 			fieldname = scrub(label)
 		if fieldtype == "Currency":
@@ -998,7 +998,7 @@ class ReceivablePayableReport(object):
 			width = 90
 
 		self.columns.append(
-			dict(label=label, fieldname=fieldname, fieldtype=fieldtype, options=options, width=width)
+			dict(label=label, fieldname=fieldname, fieldtype=fieldtype, options=options, width=width, hidden=hidden)
 		)
 
 	def setup_ageing_columns(self):

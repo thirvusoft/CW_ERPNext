@@ -129,13 +129,13 @@ def get_stock_balance(
 			serial_nos = get_serial_nos_data_after_transactions(args)
 
 			return (
-				(last_entry.qty_after_transaction, last_entry.valuation_rate, serial_nos)
+				(last_entry.qty_after_transaction, last_entry.valuation_rate or last_entry.incoming_rate, serial_nos)
 				if last_entry
 				else (0.0, 0.0, None)
 			)
 		else:
 			return (
-				(last_entry.qty_after_transaction, last_entry.valuation_rate) if last_entry else (0.0, 0.0)
+				(last_entry.qty_after_transaction, last_entry.valuation_rate or  last_entry.incoming_rate) if last_entry else (0.0, 0.0)
 			)
 	else:
 		return last_entry.qty_after_transaction if last_entry else 0.0

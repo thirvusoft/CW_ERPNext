@@ -40,7 +40,9 @@ frappe.query_reports["Item-wise Sales Register"] = {
 			"fieldname": "warehouse",
 			"label": __("Warehouse"),
 			"fieldtype": "Link",
-			"options": "Warehouse"
+			"options": "Warehouse",
+			"default": frappe.defaults.get_user_permissions()['Warehouse']?frappe.defaults.get_user_permissions()['Warehouse'].filter(d=> d.is_default)[0].doc:'',
+			"read_only": (frappe.defaults.get_user_permissions()['Warehouse'] && frappe.defaults.get_user_permissions()['Warehouse'].filter(d=> d.is_default).length == 1)?1:0
 		},
 		{
 			"fieldname": "brand",

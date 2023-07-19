@@ -560,13 +560,13 @@ class StockReconciliation(StockController):
 
 @frappe.whitelist()
 def get_items(
-	warehouse, posting_date, posting_time, company, item_code=None, ignore_empty_stock=False
+	warehouse, posting_date, posting_time, company, item_code=None, brand=None, ignore_empty_stock=False
 ):
 	ignore_empty_stock = cint(ignore_empty_stock)
 	items = [frappe._dict({"item_code": item_code, "warehouse": warehouse})]
 
 	if not item_code:
-		items = get_items_for_stock_reco(warehouse, company)
+		items = get_items_for_stock_reco(warehouse, company, brand)
 
 	res = []
 	itemwise_batch_data = get_itemwise_batch(warehouse, posting_date, company, item_code)
@@ -608,8 +608,11 @@ def get_items(
 	return res
 
 
-def get_items_for_stock_reco(warehouse, company):
+def get_items_for_stock_reco(warehouse, company, brand=None):
 	lft, rgt = frappe.db.get_value("Warehouse", warehouse, ["lft", "rgt"])
+	brand_cond = ""
+	if(brand):
+		brand_cond = f" And (i.brand_name = '{brand}' or i.brand='{brand}') "
 	items = frappe.db.sql(
 		f"""
 		select
@@ -621,6 +624,7 @@ def get_items_for_stock_reco(warehouse, company):
 			and IFNULL(i.disabled, 0) = 0
 			and i.is_stock_item = 1
 			and i.has_variants = 0
+			{brand_cond}
 			and exists(
 				select name from `tabWarehouse` where lft >= {lft} and rgt <= {rgt} and name = bin.warehouse
 			)
@@ -629,7 +633,7 @@ def get_items_for_stock_reco(warehouse, company):
 	)
 
 	items += frappe.db.sql(
-		"""
+		f"""
 		select
 			i.name as item_code, i.item_name, id.default_warehouse as warehouse, i.has_serial_no, i.has_batch_no
 		from
@@ -641,6 +645,7 @@ def get_items_for_stock_reco(warehouse, company):
 			)
 			and i.is_stock_item = 1
 			and i.has_variants = 0
+			{brand_cond}
 			and IFNULL(i.disabled, 0) = 0
 			and id.company = %s
 		group by i.name

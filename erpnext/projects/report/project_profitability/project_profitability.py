@@ -153,6 +153,7 @@ def get_columns():
 			"fieldtype": "Link",
 			"options": "Project",
 			"width": 100,
+			"hidden":1
 		},
 		{
 			"fieldname": "base_grand_total",

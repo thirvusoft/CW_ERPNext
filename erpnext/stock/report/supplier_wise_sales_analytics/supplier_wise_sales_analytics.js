@@ -4,6 +4,15 @@
 frappe.query_reports["Supplier-Wise Sales Analytics"] = {
 	"filters": [
 		{
+			"fieldname":"company",
+			"label": __("Company"),
+			"fieldtype": "Link",
+			"options": "Company",
+			"width": "80",
+			"default":frappe.defaults.get_user_permissions()['Company']?frappe.defaults.get_user_permissions()['Company'].filter(d=> d.is_default)[0].doc:'',
+			"reqd":1
+		},
+		{
 			"fieldname":"supplier",
 			"label": __("Supplier"),
 			"fieldtype": "Link",

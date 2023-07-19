@@ -224,6 +224,7 @@ def get_columns(additional_table_columns, filters):
 			"fieldtype": "Link",
 			"options": "Project",
 			"width": 80,
+			"hidden":1,
 		},
 		{
 			"label": _("Company"),

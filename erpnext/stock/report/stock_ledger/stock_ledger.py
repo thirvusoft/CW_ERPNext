@@ -210,6 +210,7 @@ def get_columns():
 			"fieldtype": "Link",
 			"options": "Project",
 			"width": 100,
+			"hidden":1
 		},
 		{
 			"label": _("Company"),

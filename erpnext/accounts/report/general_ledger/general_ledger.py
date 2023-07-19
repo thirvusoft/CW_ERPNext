@@ -183,6 +183,8 @@ def get_gl_entries(filters, accounting_dimensions):
 	if accounting_dimensions:
 		dimension_fields = ", ".join(accounting_dimensions) + ","
 
+	conditions=get_conditions(filters)
+
 	distributed_cost_center_query = ""
 	if filters and filters.get("cost_center"):
 		select_fields_with_percentage = """, debit*(DCC_allocation.percentage_allocation/100) as debit,
@@ -220,7 +222,7 @@ def get_gl_entries(filters, accounting_dimensions):
 		""".format(
 			dimension_fields=dimension_fields,
 			select_fields_with_percentage=select_fields_with_percentage,
-			conditions=get_conditions(filters).replace("and cost_center in %(cost_center)s ", ""),
+			conditions=conditions.replace("and cost_center in %(cost_center)s ", ""),
 		)
 
 	gl_entries = frappe.db.sql(
@@ -238,7 +240,7 @@ def get_gl_entries(filters, accounting_dimensions):
 		""".format(
 			dimension_fields=dimension_fields,
 			select_fields=select_fields,
-			conditions=get_conditions(filters),
+			conditions=conditions,
 			distributed_cost_center_query=distributed_cost_center_query,
 			order_by_statement=order_by_statement,
 		),
@@ -269,11 +271,31 @@ def get_conditions(filters):
 	if filters.get("group_by") == "Group by Party" and not filters.get("party_type"):
 		conditions.append("party_type in ('Customer', 'Supplier')")
 
-	if filters.get("party_type"):
+	if filters.get("party_type") and not filters.get("include_common_party"):
 		conditions.append("party_type=%(party_type)s")
-
-	if filters.get("party"):
+	if filters.get("party") and filters.get("include_common_party"):
+		common_party = frappe.db.sql(f""" 
+							select 
+			       				primary_party, secondary_party
+							from 
+			       				`tabParty Link`
+							where 
+								(primary_party in ('{"', '".join(filters.get("party"))}') or 
+								secondary_party in ('{"', '".join(filters.get("party"))}'))
+						""", as_dict = True)
+		common_party = [i["primary_party"] for i in common_party] + [i["secondary_party"] for i in common_party]
+		conditions.append(f""" party in ('{"', '".join(common_party)}') """)
+	elif filters.get("party"):
 		conditions.append("party in %(party)s")
+	elif filters.get("include_common_party"):
+		common_party = frappe.db.sql(f""" 
+							select 
+			       				primary_party, secondary_party
+							from 
+			       				`tabParty Link`
+						""", as_dict = True)
+		common_party = [i["primary_party"] for i in common_party] + [i["secondary_party"] for i in common_party]
+		conditions.append(f""" party in ('{"', '".join(common_party)}') """)
 
 	if not (
 		filters.get("account")
@@ -608,7 +630,7 @@ def get_columns(filters):
 			{"label": _("Against Account"), "fieldname": "against", "width": 120},
 			{"label": _("Party Type"), "fieldname": "party_type", "width": 100},
 			{"label": _("Party"), "fieldname": "party", "width": 100},
-			{"label": _("Project"), "options": "Project", "fieldname": "project", "width": 100},
+			{"label": _("Project"), "options": "Project", "fieldname": "project", "width": 100, "hidden":1},
 		]
 	)
 
@@ -618,7 +640,7 @@ def get_columns(filters):
 				{"label": _(dim.label), "options": dim.label, "fieldname": dim.fieldname, "width": 100}
 			)
 		columns.append(
-			{"label": _("Cost Center"), "options": "Cost Center", "fieldname": "cost_center", "width": 100}
+			{"label": _("Cost Center"), "options": "Cost Center", "fieldname": "cost_center", "width": 100, "hidden":1}
 		)
 
 	columns.extend(

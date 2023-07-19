@@ -70,6 +70,7 @@ def get_columns():
 		{"fieldtype": "Check", "fieldname": "is_return", "label": _("Is Return"), "width": 85},
 		{"fieldtype": "Data", "fieldname": "ack_no", "label": "Ack. No.", "width": 145},
 		{"fieldtype": "Data", "fieldname": "ack_date", "label": "Ack. Date", "width": 165},
+		{"fieldtype": "Data", "fieldname": "ewaybill", "label": _("E-Way Bill No."), "width": 250},
 		{"fieldtype": "Data", "fieldname": "irn", "label": _("IRN No."), "width": 250},
 		{
 			"fieldtype": "Currency",

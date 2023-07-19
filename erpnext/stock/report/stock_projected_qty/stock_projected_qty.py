@@ -136,6 +136,7 @@ def get_columns():
 			"fieldtype": "Float",
 			"width": 100,
 			"convertible": "qty",
+			"width":200,
 		},
 		{
 			"label": _("Planned Qty"),
@@ -143,6 +144,7 @@ def get_columns():
 			"fieldtype": "Float",
 			"width": 100,
 			"convertible": "qty",
+			"hidden":1,
 		},
 		{
 			"label": _("Requested Qty"),
@@ -150,6 +152,7 @@ def get_columns():
 			"fieldtype": "Float",
 			"width": 110,
 			"convertible": "qty",
+			"hidden":1,
 		},
 		{
 			"label": _("Ordered Qty"),
@@ -157,6 +160,7 @@ def get_columns():
 			"fieldtype": "Float",
 			"width": 100,
 			"convertible": "qty",
+			"width":200,
 		},
 		{
 			"label": _("Reserved Qty"),
@@ -164,6 +168,7 @@ def get_columns():
 			"fieldtype": "Float",
 			"width": 100,
 			"convertible": "qty",
+			"width":200,
 		},
 		{
 			"label": _("Reserved for Production"),
@@ -171,6 +176,7 @@ def get_columns():
 			"fieldtype": "Float",
 			"width": 100,
 			"convertible": "qty",
+			"hidden":1,
 		},
 		{
 			"label": _("Reserved for Sub Contracting"),
@@ -178,6 +184,7 @@ def get_columns():
 			"fieldtype": "Float",
 			"width": 100,
 			"convertible": "qty",
+			"hidden":1,
 		},
 		{
 			"label": _("Reserved for POS Transactions"),
@@ -185,6 +192,7 @@ def get_columns():
 			"fieldtype": "Float",
 			"width": 100,
 			"convertible": "qty",
+			"hidden":1,
 		},
 		{
 			"label": _("Projected Qty"),
@@ -192,6 +200,7 @@ def get_columns():
 			"fieldtype": "Float",
 			"width": 100,
 			"convertible": "qty",
+			"width":200,
 		},
 		{
 			"label": _("Reorder Level"),
@@ -199,6 +208,7 @@ def get_columns():
 			"fieldtype": "Float",
 			"width": 100,
 			"convertible": "qty",
+			"hidden":1,
 		},
 		{
 			"label": _("Reorder Qty"),
@@ -206,6 +216,7 @@ def get_columns():
 			"fieldtype": "Float",
 			"width": 100,
 			"convertible": "qty",
+			"hidden":1,
 		},
 		{
 			"label": _("Shortage Qty"),
@@ -213,6 +224,7 @@ def get_columns():
 			"fieldtype": "Float",
 			"width": 100,
 			"convertible": "qty",
+			"hidden":1,
 		},
 	]
 

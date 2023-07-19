@@ -8,11 +8,14 @@ from frappe.utils import flt
 from six import iteritems
 
 
-def execute(filters=None):
+def execute(filters={}):
+	if(filters.get("company")):
+		if(not(frappe.has_permission("Company", "read", filters.get("company")) or frappe.has_permission("Company", "select", filters.get("company")))):
+			frappe.throw(_("Not permitted for {0}").format(filters.get("company")), frappe.PermissionError)
 	columns = get_columns(filters)
 	consumed_details = get_consumed_details(filters)
 	supplier_details = get_suppliers_details(filters)
-	material_transfer_vouchers = get_material_transfer_vouchers()
+	material_transfer_vouchers = get_material_transfer_vouchers(filters)
 	data = []
 
 	for item_code, suppliers in iteritems(supplier_details):
@@ -85,13 +88,15 @@ def get_conditions(filters):
 def get_consumed_details(filters):
 	conditions, values = get_conditions(filters)
 	consumed_details = {}
-
+	company_cond = ""
+	if(company:=filters.get("company")):
+		company_cond = f"""And sle.company = "{company}" """
 	for d in frappe.db.sql(
-		"""select sle.item_code, i.item_name, i.description,
+		f"""select sle.item_code, i.item_name, i.description,
 		i.stock_uom, sle.actual_qty, sle.stock_value_difference,
 		sle.voucher_no, sle.voucher_type
 		from `tabStock Ledger Entry` sle, `tabItem` i
-		where sle.is_cancelled = 0 and sle.item_code=i.name and sle.actual_qty < 0 %s"""
+		where sle.is_cancelled = 0 {company_cond} and sle.item_code=i.name and sle.actual_qty < 0 %s"""
 		% conditions,
 		values,
 		as_dict=1,
@@ -104,11 +109,13 @@ def get_consumed_details(filters):
 def get_suppliers_details(filters):
 	item_supplier_map = {}
 	supplier = filters.get("supplier")
-
+	company_cond = ""
+	if(company:=filters.get("company")):
+		company_cond = f"""And pr.company = "{company}" """
 	for d in frappe.db.sql(
-		"""select pr.supplier, pri.item_code from
+		f"""select pr.supplier, pri.item_code from
 		`tabPurchase Receipt` pr, `tabPurchase Receipt Item` pri
-		where pr.name=pri.parent and pr.docstatus=1 and
+		where pr.name=pri.parent and pr.docstatus=1 {company_cond} and
 		pri.item_code=(select name from `tabItem` where
 			is_stock_item=1 and name=pri.item_code)""",
 		as_dict=1,
@@ -116,9 +123,9 @@ def get_suppliers_details(filters):
 		item_supplier_map.setdefault(d.item_code, []).append(d.supplier)
 
 	for d in frappe.db.sql(
-		"""select pr.supplier, pri.item_code from
+		f"""select pr.supplier, pri.item_code from
 		`tabPurchase Invoice` pr, `tabPurchase Invoice Item` pri
-		where pr.name=pri.parent and pr.docstatus=1 and
+		where pr.name=pri.parent and pr.docstatus=1 {company_cond} and
 		ifnull(pr.update_stock, 0) = 1 and pri.item_code=(select name from `tabItem`
 			where is_stock_item=1 and name=pri.item_code)""",
 		as_dict=1,
@@ -138,8 +145,11 @@ def get_suppliers_details(filters):
 	return item_supplier_map
 
 
-def get_material_transfer_vouchers():
+def get_material_transfer_vouchers(filters={}):
+	company_cond = ""
+	if(company:=filters.get("company")):
+		company_cond = f"""And company = "{company}" """
 	return frappe.db.sql_list(
-		"""select name from `tabStock Entry` where
-		purpose='Material Transfer' and docstatus=1"""
+		f"""select name from `tabStock Entry` where
+		purpose='Material Transfer' and docstatus=1 {company_cond}"""
 	)

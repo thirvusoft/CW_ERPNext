@@ -196,6 +196,7 @@ def get_columns(invoice_list, additional_table_columns):
 			"fieldtype": "Link",
 			"options": "Project",
 			"width": 80,
+			"hidden":1
 		},
 		{"label": _("Owner"), "fieldname": "owner", "fieldtype": "Data", "width": 150},
 		{"label": _("Remarks"), "fieldname": "remarks", "fieldtype": "Data", "width": 150},
@@ -219,6 +220,7 @@ def get_columns(invoice_list, additional_table_columns):
 			"fieldtype": "Link",
 			"options": "Cost Center",
 			"width": 100,
+			"hidden":1
 		},
 		{
 			"label": _("Gst Category"),
@@ -439,7 +441,7 @@ def get_invoices(filters, additional_query_columns):
 		base_net_total, base_grand_total, base_rounded_total, outstanding_amount,
 		is_internal_customer, represents_company, company {0}
 		from `tabSales Invoice`
-		where docstatus = 1 %s order by posting_date desc, name desc""".format(
+		where docstatus = 1 %s order by posting_date asc, name asc""".format(
 			additional_query_columns or ""
 		)
 		% conditions,

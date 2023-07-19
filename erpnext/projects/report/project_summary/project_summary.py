@@ -47,6 +47,7 @@ def get_columns():
 			"fieldtype": "Link",
 			"options": "Project",
 			"width": 200,
+			"hidden":1
 		},
 		{
 			"fieldname": "project_type",

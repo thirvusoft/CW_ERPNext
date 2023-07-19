@@ -53,6 +53,9 @@ frappe.ui.form.on("Stock Reconciliation", {
 		if(frm.doc.company) {
 			frm.trigger("toggle_display_account_head");
 		}
+		frm.add_custom_button("Re-Fetch Valuation Rate", ()=>{
+			frm.trigger("set_valuation_rate_and_qty_for_all_items");
+		})
 	},
 
 	get_items: function(frm) {
@@ -85,6 +88,12 @@ frappe.ui.form.on("Stock Reconciliation", {
 				}
 			},
 			{
+				label: "Brand",
+				fieldname: "brand",
+				fieldtype: "Link",
+				options: "Brand",
+			},
+			{
 				label: __("Ignore Empty Stock"),
 				fieldname: "ignore_empty_stock",
 				fieldtype: "Check"
@@ -100,6 +109,7 @@ frappe.ui.form.on("Stock Reconciliation", {
 					posting_time: frm.doc.posting_time,
 					company: frm.doc.company,
 					item_code: data.item_code,
+					brand: data.brand,
 					ignore_empty_stock: data.ignore_empty_stock
 				},
 				callback: function(r) {

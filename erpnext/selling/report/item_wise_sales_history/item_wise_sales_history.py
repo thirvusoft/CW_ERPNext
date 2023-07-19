@@ -84,6 +84,7 @@ def get_columns(filters):
 			"fieldname": "project",
 			"options": "Project",
 			"width": 100,
+			"hidden":1
 		},
 		{
 			"label": _("Delivered Quantity"),

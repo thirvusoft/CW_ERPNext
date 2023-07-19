@@ -22,7 +22,7 @@ frappe.query_reports["Sales Payment Summary"] = {
 			"label": __("Company"),
 			"fieldtype": "Link",
 			"options": "Company",
-			"default": frappe.defaults.get_user_permissions()['Company']?frappe.defaults.get_user_permissions()['Company'][0].doc:''
+			"default": frappe.defaults.get_user_permissions()['Company']?frappe.defaults.get_user_permissions()['Company'].filter(d=> d.is_default)[0].doc:''
 		},
 		{
 			"fieldname":"owner",
@@ -47,8 +47,8 @@ frappe.query_reports["Sales Payment Summary"] = {
 			"label": __("Branch"),
 			"fieldtype": "Link",
 			"options": "Branch",
-			"default": frappe.defaults.get_user_permissions()['Branch']?frappe.defaults.get_user_permissions()['Branch'][0].doc:'',
-			"read_only": (frappe.defaults.get_user_permissions()['Branch'] && frappe.defaults.get_user_permissions()['Branch'].length == 1)?1:0
+			"default": frappe.defaults.get_user_permissions()['Branch']?frappe.defaults.get_user_permissions()['Branch'].filter(d=> d.is_default)[0].doc:'',
+			"read_only": (frappe.defaults.get_user_permissions()['Branch'] && frappe.defaults.get_user_permissions()['Branch'].filter(d=> d.is_default).length == 1)?1:0
 		},
 	]
 };

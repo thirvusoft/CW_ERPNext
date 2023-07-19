@@ -317,6 +317,7 @@ def get_columns(filters):
 			"fieldname": "cost_center",
 			"options": "Cost Center",
 			"width": 100,
+			"hidden":1,
 		},
 		{
 			"label": _("Department"),

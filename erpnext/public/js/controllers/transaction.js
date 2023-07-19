@@ -875,6 +875,9 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 				if (company_doc.default_selling_terms && frappe.meta.has_field(me.frm.doc.doctype, "tc_name") &&
 				selling_doctypes_for_tc.indexOf(me.frm.doc.doctype) != -1) {
 					me.frm.set_value("tc_name", company_doc.default_selling_terms);
+					frappe.db.get_value("Terms and Conditions", company_doc.default_selling_terms,"terms").then(r => {
+						me.frm.set_value("terms", r.message.terms)
+					})
 				}
 				let buying_doctypes_for_tc = ["Request for Quotation", "Supplier Quotation", "Purchase Order",
 					"Material Request", "Purchase Receipt"];

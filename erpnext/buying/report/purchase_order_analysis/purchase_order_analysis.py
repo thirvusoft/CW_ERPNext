@@ -184,6 +184,7 @@ def get_columns(filters):
 			"fieldtype": "Link",
 			"options": "Project",
 			"width": 130,
+			"hidden":1,
 		},
 	]
 

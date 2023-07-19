@@ -9,7 +9,7 @@ frappe.query_reports["Stock Balance"] = {
 			"fieldtype": "Link",
 			"width": "80",
 			"options": "Company",
-			"default": frappe.defaults.get_user_permissions()['Company']?frappe.defaults.get_user_permissions()['Company'][0].doc:'',
+			"default": frappe.defaults.get_user_permissions()['Company']?frappe.defaults.get_user_permissions()['Company'].filter(d=> d.is_default)[0].doc:'',
 			"reqd":1
 		},
 		{
@@ -81,7 +81,8 @@ frappe.query_reports["Stock Balance"] = {
 		{
 			"fieldname": "show_variant_attributes",
 			"label": __("Show Variant Attributes"),
-			"fieldtype": "Check"
+			"fieldtype": "Check",
+			"default":1
 		},
 		{
 			"fieldname": 'show_stock_ageing_data',

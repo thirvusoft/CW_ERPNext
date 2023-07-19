@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_import": 1,
+ "allow_rename": 1,
  "autoname": "field:year",
  "creation": "2013-01-22 16:50:25",
  "description": "**Fiscal Year** represents a Financial Year. All accounting entries and other major transactions are tracked against **Fiscal Year**.",
@@ -82,7 +83,7 @@
  "icon": "fa fa-calendar",
  "idx": 1,
  "links": [],
- "modified": "2020-11-05 12:16:53.081573",
+ "modified": "2023-07-10 10:02:36.631234",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Fiscal Year",

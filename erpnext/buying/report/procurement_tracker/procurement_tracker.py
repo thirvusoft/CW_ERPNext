@@ -34,6 +34,7 @@ def get_columns(filters):
 			"fieldname": "cost_center",
 			"fieldtype": "Link",
 			"width": 140,
+			"hidden":1,
 		},
 		{
 			"label": _("Project"),
@@ -41,6 +42,7 @@ def get_columns(filters):
 			"fieldname": "project",
 			"fieldtype": "Link",
 			"width": 140,
+			"hidden":1,
 		},
 		{
 			"label": _("Requesting Site"),

@@ -392,6 +392,7 @@
    "oldfieldtype": "Date"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "amended_from",
    "fieldtype": "Link",
    "hide_days": 1,
@@ -2084,7 +2085,7 @@
    "link_fieldname": "consolidated_invoice"
   }
  ],
- "modified": "2023-06-30 13:14:53.964263",
+ "modified": "2023-07-14 14:53:41.461024",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Sales Invoice",

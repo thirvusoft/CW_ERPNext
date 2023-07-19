@@ -265,6 +265,7 @@ def get_columns(additional_table_columns, filters):
 			"fieldtype": "Link",
 			"options": "Project",
 			"width": 80,
+			"hidden":1
 		},
 		{
 			"label": _("Company"),
@@ -300,6 +301,7 @@ def get_columns(additional_table_columns, filters):
 			"fieldtype": "Link",
 			"options": "Cost Center",
 			"width": 100,
+			"hidden":1
 		},
 		{"label": _("Stock Qty"), "fieldname": "stock_qty", "fieldtype": "Float", "width": 100},
 		{

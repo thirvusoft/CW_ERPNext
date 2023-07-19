@@ -75,6 +75,7 @@ def get_column():
 			"fieldtype": "Link",
 			"options": "Project",
 			"width": 120,
+			"hidden":1
 		},
 		{
 			"label": _("Company"),

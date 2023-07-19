@@ -283,6 +283,7 @@ def get_columns(group_wise_columns, filters):
 				"fieldtype": "Link",
 				"options": "Project",
 				"width": 100,
+				"hidden":1
 			},
 			"sales_person": {
 				"label": _("Sales Person"),

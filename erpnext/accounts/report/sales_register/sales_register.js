@@ -85,20 +85,33 @@ frappe.query_reports["Sales Register"] = {
 				frappe.query_report.page.fields_dict.company_gstin.refresh();
 			}
 		});
+
+		frappe.query_report.page.fields_dict.company.df.onchange = function(){
+			frappe.call({
+				method: 'erpnext.regional.report.gstr_1.gstr_1.get_company_gstins',
+				args: {
+					company: frappe.query_report.page.fields_dict.company.get_value() 
+				},
+				callback: function(r) {
+					frappe.query_report.page.fields_dict.company_gstin.df.options = r.message;
+					frappe.query_report.page.fields_dict.company_gstin.refresh();
+				}
+			});
+		}
 	}
 }
-setTimeout(()=>{
-	frappe.query_report.page.fields_dict.company.df.onchange = function(){
-		frappe.call({
-			method: 'erpnext.regional.report.gstr_1.gstr_1.get_company_gstins',
-			args: {
-				company: frappe.query_report.page.fields_dict.company.get_value() 
-			},
-			callback: function(r) {
-				frappe.query_report.page.fields_dict.company_gstin.df.options = r.message;
-				frappe.query_report.page.fields_dict.company_gstin.refresh();
-			}
-		});
-	}
-}, 100)
+// setTimeout(()=>{
+// 	frappe.query_report.page.fields_dict.company.df.onchange = function(){
+// 		frappe.call({
+// 			method: 'erpnext.regional.report.gstr_1.gstr_1.get_company_gstins',
+// 			args: {
+// 				company: frappe.query_report.page.fields_dict.company.get_value() 
+// 			},
+// 			callback: function(r) {
+// 				frappe.query_report.page.fields_dict.company_gstin.df.options = r.message;
+// 				frappe.query_report.page.fields_dict.company_gstin.refresh();
+// 			}
+// 		});
+// 	}
+// }, 100)
 erpnext.utils.add_dimensions('Sales Register', 7);
