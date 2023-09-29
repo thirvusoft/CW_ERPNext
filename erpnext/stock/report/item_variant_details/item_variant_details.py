@@ -8,11 +8,11 @@ from frappe import _
 
 def execute(filters=None):
 	columns = get_columns(filters.item)
-	data = get_data(filters.item)
+	data = get_data(filters.item, filters)
 	return columns, data
 
 
-def get_data(item):
+def get_data(item, filters={}):
 	if not item:
 		return []
 	item_dicts = []
@@ -27,10 +27,10 @@ def get_data(item):
 	else:
 		variant_list = [variant["name"] for variant in variant_results]
 
-	order_count_map = get_open_sales_orders_count(variant_list)
-	stock_details_map = get_stock_details_map(variant_list)
-	buying_price_map = get_buying_price_map(variant_list)
-	selling_price_map = get_selling_price_map(variant_list)
+	order_count_map = get_open_sales_orders_count(variant_list, filters)
+	stock_details_map = get_stock_details_map(variant_list, filters)
+	buying_price_map = get_buying_price_map(variant_list, filters)
+	selling_price_map = get_selling_price_map(variant_list, filters)
 	attr_val_map = get_attribute_values_map(variant_list)
 
 	attributes = frappe.db.get_all(
@@ -104,7 +104,7 @@ def get_columns(item):
 			"width": 150,
 		},
 		{"fieldname": "current_stock", "label": _("Current Stock"), "fieldtype": "Float", "width": 120},
-		{"fieldname": "in_production", "label": _("In Production"), "fieldtype": "Float", "width": 150},
+		{"fieldname": "in_production", "label": _("In Production"), "fieldtype": "Float", "width": 150, "hidden":1},
 		{
 			"fieldname": "open_orders",
 			"label": _("Open Sales Orders"),
@@ -117,14 +117,19 @@ def get_columns(item):
 	return columns
 
 
-def get_open_sales_orders_count(variants_list):
+def get_open_sales_orders_count(variants_list, filters={}):
+	open_so_filters = [
+			["Sales Order", "docstatus", "=", 1],
+			["Sales Order Item", "item_code", "in", variants_list],
+		]
+	if(filters.get("warehouse")):
+		open_so_filters.append(
+			["Sales Order Item", "warehouse", "=", filters.get("warehouse")]
+		)
 	open_sales_orders = frappe.db.get_list(
 		"Sales Order",
 		fields=["name", "`tabSales Order Item`.item_code"],
-		filters=[
-			["Sales Order", "docstatus", "=", 1],
-			["Sales Order Item", "item_code", "in", variants_list],
-		],
+		filters=open_so_filters,
 		distinct=1,
 	)
 
@@ -139,7 +144,11 @@ def get_open_sales_orders_count(variants_list):
 	return order_count_map
 
 
-def get_stock_details_map(variant_list):
+def get_stock_details_map(variant_list, filters={}):
+
+	bin_filter = {"item_code": ["in", variant_list]}
+	if(filters.get("warehouse")):
+		bin_filter["warehouse"] = filters.get("warehouse")
 	stock_details = frappe.db.get_all(
 		"Bin",
 		fields=[
@@ -148,7 +157,7 @@ def get_stock_details_map(variant_list):
 			"sum(projected_qty) as projected_qty",
 			"item_code",
 		],
-		filters={"item_code": ["in", variant_list]},
+		filters=bin_filter,
 		group_by="item_code",
 	)
 
@@ -163,14 +172,17 @@ def get_stock_details_map(variant_list):
 	return stock_details_map
 
 
-def get_buying_price_map(variant_list):
+def get_buying_price_map(variant_list, filters):
+	buying_filter = {"item_code": ["in", variant_list], "docstatus": ["!=", 2]}
+	if filters.get("warehouse"):
+		buying_filter["warehouse"] = filters.get("warehouse")
 	buying = frappe.db.get_all(
-		"Item Price",
+		"Purchase Invoice Item",
 		fields=[
-			"avg(price_list_rate) as avg_rate",
+			"avg(rate) as avg_rate",
 			"item_code",
 		],
-		filters={"item_code": ["in", variant_list], "buying": 1},
+		filters=buying_filter,
 		group_by="item_code",
 	)
 
@@ -181,17 +193,19 @@ def get_buying_price_map(variant_list):
 	return buying_price_map
 
 
-def get_selling_price_map(variant_list):
+def get_selling_price_map(variant_list, filters={}):
+	si_filters = {"item_code": ["in", variant_list], "docstatus": ["!=", 2]}
+	if filters.get("warehouse"):
+		si_filters["warehouse"] = filters.get("warehouse")
 	selling = frappe.db.get_all(
-		"Item Price",
+		"Sales Invoice Item",
 		fields=[
-			"avg(price_list_rate) as avg_rate",
+			"avg(rate) as avg_rate",
 			"item_code",
 		],
-		filters={"item_code": ["in", variant_list], "selling": 1},
+		filters=si_filters,
 		group_by="item_code",
 	)
-
 	selling_price_map = {}
 	for row in selling:
 		selling_price_map[row.get("item_code")] = row.get("avg_rate")

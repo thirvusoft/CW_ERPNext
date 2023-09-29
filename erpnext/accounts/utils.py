@@ -840,7 +840,7 @@ def remove_return_pos_invoices(party_type, party, invoice_list):
 	return invoice_list
 
 
-def get_outstanding_invoices(party_type, party, account, condition=None, filters=None):
+def get_outstanding_invoices(party_type, party, account, condition=None, filters=None, party_branch=None):
 	outstanding_invoices = []
 	precision = frappe.get_precision("Sales Invoice", "outstanding_amount") or 2
 
@@ -944,9 +944,32 @@ def get_outstanding_invoices(party_type, party, account, condition=None, filters
 					)
 				)
 
-	outstanding_invoices = sorted(
+	outstanding_invoices_test = sorted(
 		outstanding_invoices, key=lambda k: k["due_date"] or getdate(nowdate())
 	)
+	if party_branch:
+		outstanding_invoices=[]
+		party_address=frappe.get_all("Address",filters={"branch":party_branch},pluck="name")        
+		sales_invoices=frappe.get_all("Sales Invoice",filters={"customer":party,"customer_address":["in",party_address]},pluck="name")        
+		purchase_invoices=frappe.get_all("Purchase Invoice",filters={"supplier":party,"supplier_address":["in",party_address]},pluck="name")
+		journal_entry=frappe.get_all("Journal Entry", filters={"party_branch":party_branch}, pluck="name")
+		for i in outstanding_invoices_test:            
+			if i["voucher_type"] == "Sales Invoice":
+				if i["voucher_no"] in sales_invoices:                    
+					outstanding_invoices.append(i)
+			elif i["voucher_type"] == "Purchase Invoice":                
+				if i["voucher_no"] in purchase_invoices:
+					outstanding_invoices.append(i)
+			elif i["voucher_type"] == "Journal Entry":
+				if i["voucher_no"] in journal_entry:
+					outstanding_invoices.append(i)
+			else:
+				outstanding_invoices.append(i)
+
+
+	else:
+		outstanding_invoices=outstanding_invoices_test
+		
 	return outstanding_invoices
 
 

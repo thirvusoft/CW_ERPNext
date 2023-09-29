@@ -128,7 +128,8 @@
    "default": "0",
    "fieldname": "is_transporter",
    "fieldtype": "Check",
-   "label": "Is Transporter"
+   "label": "Is Transporter",
+   "reqd": 1
   },
   {
    "default": "0",
@@ -439,7 +440,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2023-03-29 19:05:10.047937",
+ "modified": "2023-07-24 17:51:10.091017",
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Supplier",

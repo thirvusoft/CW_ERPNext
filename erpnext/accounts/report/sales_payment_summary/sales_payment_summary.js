@@ -47,7 +47,7 @@ frappe.query_reports["Sales Payment Summary"] = {
 			"label": __("Branch"),
 			"fieldtype": "Link",
 			"options": "Branch",
-			"default": frappe.defaults.get_user_permissions()['Branch']?frappe.defaults.get_user_permissions()['Branch'].filter(d=> d.is_default)[0].doc:'',
+			"default": frappe.defaults.get_user_permissions()['Branch']?frappe.defaults.get_user_permissions()['Branch'].filter(d=> d.is_default)[0]?.doc:'',
 			"read_only": (frappe.defaults.get_user_permissions()['Branch'] && frappe.defaults.get_user_permissions()['Branch'].filter(d=> d.is_default).length == 1)?1:0
 		},
 	]

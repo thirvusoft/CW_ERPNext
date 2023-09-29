@@ -125,8 +125,8 @@ class SalesInvoice(SellingController):
 			self.doctype, self.customer, self.company, self.inter_company_invoice_reference
 		)
 
-		if cint(self.is_pos) and self.company != "TEAM CYCLE WORLD PVT. LTD.":
-			self.validate_pos()
+		# if cint(self.is_pos) and self.company != "TEAM CYCLE WORLD PVT. LTD.":
+		# 	self.validate_pos()
 
 		if cint(self.update_stock):
 			self.validate_dropship_item()

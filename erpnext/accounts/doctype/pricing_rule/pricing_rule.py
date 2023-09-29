@@ -282,6 +282,7 @@ def update_pricing_rule_uom(pricing_rule, args):
 
 
 def get_pricing_rule_for_item(args, price_list_rate=0, doc=None, for_validate=False):
+	
 	from erpnext.accounts.doctype.pricing_rule.utils import (
 		get_applied_pricing_rules,
 		get_pricing_rule_items,
@@ -294,7 +295,6 @@ def get_pricing_rule_for_item(args, price_list_rate=0, doc=None, for_validate=Fa
 
 	if doc:
 		doc = frappe.get_doc(doc)
-
 	if args.get("is_free_item") or args.get("parenttype") == "Material Request":
 		return {}
 
@@ -307,21 +307,27 @@ def get_pricing_rule_for_item(args, price_list_rate=0, doc=None, for_validate=Fa
 			"parent": args.parent,
 			"parenttype": args.parenttype,
 			"child_docname": args.get("child_docname"),
+			"rate":args.get("rate"),
+			"price_list_rate":args.get("price_list_rate")
 		}
 	)
-
+	pricing_rules = get_pricing_rules(args, doc) or []
+	if any([i.get("remove_for_qty_validation") for i in pricing_rules if i]):
+		args.ignore_pricing_rule=1
 	if args.ignore_pricing_rule or not args.item_code:
-		if frappe.db.exists(args.doctype, args.name) and args.get("pricing_rules"):
+		if frappe.db.exists(args.doctype, args.name):
 			item_details = remove_pricing_rule_for_item(
 				args.get("pricing_rules"),
 				item_details,
 				item_code=args.get("item_code"),
 				rate=args.get("price_list_rate"),
 			)
+		item_details.discount_percentage = 0
+		item_details.discount_amount = 0
 		return item_details
 
 	update_args_for_pricing_rule(args)
-
+	# 	 = get_pricing_rules(args, doc)
 	pricing_rules = (
 		get_applied_pricing_rules(args.get("pricing_rules"))
 		if for_validate and args.get("pricing_rules")

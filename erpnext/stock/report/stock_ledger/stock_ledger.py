@@ -49,6 +49,13 @@ def execute(filters=None):
 
 		sle.update({"in_qty": max(sle.actual_qty, 0), "out_qty": min(sle.actual_qty, 0)})
 
+		if(sle.voucher_type in ["Sales Invoice", "Delivery Note"]):
+			sle["party_type"] = "Customer"
+			sle["party"] = frappe.db.get_value(sle.voucher_type, sle.voucher_no, "customer")
+		elif(sle.voucher_type in ["Purchase Invoice", "Purchase Receipt"]):
+			sle["party_type"] = "Supplier"
+			sle["party"] = frappe.db.get_value(sle.voucher_type, sle.voucher_no, "supplier")
+
 		if sle.serial_no:
 			update_available_serial_nos(available_serial_nos, sle)
 
@@ -128,6 +135,20 @@ def get_columns():
 			"fieldtype": "Dynamic Link",
 			"options": "voucher_type",
 			"width": 150,
+		},
+		{
+			"label": _("Party"),
+			"fieldname": "party",
+			"fieldtype": "Dynamic Link",
+			"options":"party_type",
+			"width": 300,
+		},
+		{
+			"label": _("Party Type"),
+			"fieldname": "party_type",
+			"fieldtype": "Link",
+			"options":"Party Type",
+			"width": 100,
 		},
 		{
 			"label": _("Warehouse"),

@@ -314,7 +314,7 @@ def update_outstanding_amt(
 		select sum(debit_in_account_currency) - sum(credit_in_account_currency)
 		from `tabGL Entry`
 		where against_voucher_type=%s and against_voucher=%s
-		and voucher_type != 'Invoice Discounting'
+		and voucher_type != 'Invoice Discounting' and is_cancelled=0
 		{0} {1}""".format(
 				party_condition, account_condition
 			),
@@ -322,7 +322,7 @@ def update_outstanding_amt(
 		)[0][0]
 		or 0.0
 	)
-
+	print(bal)
 	if against_voucher_type == "Purchase Invoice":
 		bal = -bal
 	elif against_voucher_type == "Journal Entry":
@@ -360,9 +360,9 @@ def update_outstanding_amt(
 
 		# Didn't use db_set for optimization purpose
 		ref_doc.outstanding_amount = bal
-		frappe.db.set_value(against_voucher_type, against_voucher, "outstanding_amount", bal)
+		frappe.db.set_value(against_voucher_type, against_voucher, "outstanding_amount", bal, update_modified=False)
 
-		ref_doc.set_status(update=True)
+		ref_doc.set_status(update=True, update_modified=False)
 
 
 def validate_frozen_account(account, adv_adj=None):

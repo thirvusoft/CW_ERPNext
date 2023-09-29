@@ -20,7 +20,12 @@ class PartyLedgerSummaryReport(object):
 	def run(self, args):
 		if self.filters.from_date > self.filters.to_date:
 			frappe.throw(_("From Date must be before To Date"))
-
+		if self.filters.get("customer_gstin"):
+			party_type = args.get("party_type")
+			address = frappe.db.get_all("Address", {"gstin":["like", f"""{self.filters.get("customer_gstin")}%"""], "disabled":0}, pluck="name")
+			if(len(address)):
+				party = frappe.db.get_value("Dynamic Link", {"parenttype":"Address", "parent":["in", address], "link_doctype":party_type}, "link_name")
+				self.filters.party = party
 		self.filters.party_type = args.get("party_type")
 		self.party_naming_by = frappe.db.get_value(
 			args.get("naming_by")[0], None, args.get("naming_by")[1]
@@ -139,8 +144,24 @@ class PartyLedgerSummaryReport(object):
 
 		columns += [
 			{
-				"label": _("Closing Balance"),
+				"label": _("Closing Balance(Customer)"),
 				"fieldname": "closing_balance",
+				"fieldtype": "Currency",
+				"options": "currency",
+				"width": 120,
+				"hidden":1
+			},
+			{
+				"label": _("Closing Balance(Supplier)"),
+				"fieldname": "closing_balance_sup",
+				"fieldtype": "Currency",
+				"options": "currency",
+				"width": 120,
+				"hidden":1
+			},
+			{
+				"label": _("Closing Balance(Final)"),
+				"fieldname": "closing_balance_final",
 				"fieldtype": "Currency",
 				"options": "currency",
 				"width": 120,
@@ -446,4 +467,32 @@ def execute(filters=None):
 		"party_type": "Customer",
 		"naming_by": ["Selling Settings", "cust_master_name"],
 	}
-	return PartyLedgerSummaryReport(filters).run(args)
+	cust_data = PartyLedgerSummaryReport(filters).run(args)
+	from erpnext.accounts.report.supplier_ledger_summary.supplier_ledger_summary import PartyLedgerSummaryReport as SupplierReport
+	filt = {}
+	if filters.get("company"):
+		filt["company"] = filters["company"]
+	if filters.get("from_date"):
+		filt["from_date"] = filters["from_date"]
+	if filters.get("to_date"):
+		filt["to_date"] = filters["to_date"]
+	args = {
+		"party_type": "Supplier",
+		"naming_by": ["Buying Settings", "supp_master_name"],
+	}
+	for i in cust_data[1]:
+		i["closing_balance_final"] = i["closing_balance"]
+		i["closing_balance_sup"] = 0
+		if frappe.db.get_value("Party Link", {"primary_party":i.get("party")}) or frappe.db.get_value("Party Link", {"secondary_party":i.get("party")}):
+			supplier = frappe.db.get_value("Party Link", {"primary_party": i.get("party")}, "secondary_party") or frappe.db.get_value("Party Link", {"secondary_party": i.get("party")}, "primary_party")
+			if supplier:
+				filt["party"] = supplier
+				sup_data = SupplierReport(filt).run(args)[1]
+				if sup_data:
+					i["closing_balance_sup"] = sup_data[0]["closing_balance"]
+				else:
+					i["closing_balance_sup"] = 0
+				i["closing_balance_final"] = i["closing_balance"] - i["closing_balance_sup"]
+	return cust_data
+
+

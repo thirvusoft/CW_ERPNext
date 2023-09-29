@@ -129,10 +129,10 @@ class Account(NestedSet):
 		if ancestors:
 			if frappe.get_value("Company", self.company, "allow_account_creation_against_child_company"):
 				return
-			if not frappe.db.get_value(
-				"Account", {"account_name": self.account_name, "company": ancestors[0]}, "name"
-			):
-				frappe.throw(_("Please add the account to root level Company - {}").format(ancestors[0]))
+			# if not frappe.db.get_value(
+			# 	"Account", {"account_name": self.account_name, "company": ancestors[0]}, "name"
+			# ):
+			# 	frappe.throw(_("Please add the account to root level Company - {}").format(ancestors[0]))
 		elif self.parent_account:
 			descendants = get_descendants_of("Company", self.company)
 			if not descendants:

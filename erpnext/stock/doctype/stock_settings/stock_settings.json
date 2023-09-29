@@ -49,7 +49,10 @@
   "stock_frozen_upto_days",
   "column_break_26",
   "role_allowed_to_create_edit_back_dated_transactions",
-  "stock_auth_role"
+  "stock_auth_role",
+  "data_46",
+  "hsn_report_section",
+  "alternate_uom"
  ],
  "fields": [
   {
@@ -312,6 +315,20 @@
    "fieldtype": "Link",
    "label": "Default Out State Tax Category",
    "options": "Tax Category"
+  },
+  {
+   "fieldname": "data_46",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "hsn_report_section",
+   "fieldtype": "Section Break",
+   "label": "HSN Report"
+  },
+  {
+   "fieldname": "alternate_uom",
+   "fieldtype": "Table",
+   "options": "Alternate UOM For HSN in Report"
   }
  ],
  "icon": "icon-cog",
@@ -319,7 +336,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-04-06 16:58:13.847853",
+ "modified": "2023-08-07 19:27:19.569488",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Settings",

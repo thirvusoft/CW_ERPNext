@@ -214,8 +214,10 @@ $.extend(erpnext.utils, {
 							"fieldname": dimension["fieldname"],
 							"label": __(dimension["label"]),
 							"fieldtype": "MultiSelectList",
-							"default":[frappe.defaults.get_user_permissions()[dimension["label"]]?frappe.defaults.get_user_permissions()[dimension["label"]].filter(d=> d.is_default)[0].doc:''],
-							"hidden":frappe.defaults.get_user_permissions()['Branch'].filter(d=> d.is_default)?1:0,
+							"default":[frappe.defaults.get_user_permissions()[dimension["label"]]?(
+								frappe.defaults.get_user_permissions()[dimension["label"]].filter(d=> d.is_default).length?frappe.defaults.get_user_permissions()[dimension["label"]].filter(d=> d.is_default)[0].doc:"")
+								:''],
+							"hidden":frappe.defaults.get_user_permissions()['Branch']?(frappe.defaults.get_user_permissions()['Branch'].filter(d=> d.is_default)?1:0):0,
 							get_data: function(txt) {
 								return frappe.db.get_link_options(dimension["document_type"], txt);
 							},

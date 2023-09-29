@@ -7,20 +7,26 @@ frappe.query_reports["Sales Register"] = {
 			"fieldname":"from_date",
 			"label": __("From Date"),
 			"fieldtype": "Date",
-			"default": frappe.datetime.add_months(frappe.datetime.get_today(), -1),
+			"default": frappe.datetime.month_start(),
 			"width": "80"
 		},
 		{
 			"fieldname":"to_date",
 			"label": __("To Date"),
 			"fieldtype": "Date",
-			"default": frappe.datetime.get_today()
+			"default": frappe.datetime.month_end()
 		},
 		{
 			"fieldname":"customer",
 			"label": __("Customer"),
 			"fieldtype": "Link",
 			"options": "Customer"
+		},
+		{
+			"fieldname":"party_branch",
+			"label": __("Party Branch"),
+			"fieldtype": "Link",
+			"options": "Branch"
 		},
 		{
 			"fieldname":"company",
@@ -70,13 +76,22 @@ frappe.query_reports["Sales Register"] = {
 			"label": __("Item Group"),
 			"fieldtype": "Link",
 			"options": "Item Group"
+		},
+		{
+			"fieldname":"sum_of_ig",
+			"label": __("Item Group Wise"),
+			"fieldtype": "Select",
+			"options": ["Qty", "Amount"],
+			"default":"Qty"
 		}
 	],
 	onload: function (report) {
 		let filters = report.get_values();
-
+		if(frappe.query_report.report_name != "Sales Day Book"){
+			frappe.query_report.toggle_filter_display("sum_of_ig", true) 
+		}
 		frappe.call({
-			method: 'erpnext.accounts.report.sales_register.sales_register.get_company_gstins',
+			method: "erpnext.accounts.report.sales_register.sales_register.get_company_gstins",
 			args: {
 				company: filters.company
 			},
@@ -88,7 +103,7 @@ frappe.query_reports["Sales Register"] = {
 
 		frappe.query_report.page.fields_dict.company.df.onchange = function(){
 			frappe.call({
-				method: 'erpnext.regional.report.gstr_1.gstr_1.get_company_gstins',
+				method: "erpnext.regional.report.gstr_1.gstr_1.get_company_gstins",
 				args: {
 					company: frappe.query_report.page.fields_dict.company.get_value() 
 				},
@@ -103,7 +118,7 @@ frappe.query_reports["Sales Register"] = {
 // setTimeout(()=>{
 // 	frappe.query_report.page.fields_dict.company.df.onchange = function(){
 // 		frappe.call({
-// 			method: 'erpnext.regional.report.gstr_1.gstr_1.get_company_gstins',
+// 			method: "erpnext.regional.report.gstr_1.gstr_1.get_company_gstins",
 // 			args: {
 // 				company: frappe.query_report.page.fields_dict.company.get_value() 
 // 			},
@@ -114,4 +129,4 @@ frappe.query_reports["Sales Register"] = {
 // 		});
 // 	}
 // }, 100)
-erpnext.utils.add_dimensions('Sales Register', 7);
+erpnext.utils.add_dimensions("Sales Register", 7);

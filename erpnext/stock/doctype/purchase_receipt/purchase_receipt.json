@@ -9,6 +9,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "is_updated",
   "supplier_section",
   "column_break0",
   "title",
@@ -1151,13 +1152,21 @@
   {
    "fieldname": "column_break_11",
    "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "is_updated",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Updated"
   }
  ],
  "icon": "fa fa-truck",
  "idx": 261,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-07-17 15:46:24.208805",
+ "modified": "2023-08-29 12:09:00.442502",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt",

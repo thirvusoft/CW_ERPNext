@@ -700,6 +700,7 @@ frappe.ui.form.on('Payment Entry', {
 			"posting_date": frm.doc.posting_date,
 			"company": frm.doc.company,
 			"party_type": frm.doc.party_type,
+			"party_branch":frm.doc.party_branch,
 			"payment_type": frm.doc.payment_type,
 			"party": frm.doc.party,
 			"party_account": frm.doc.payment_type=="Receive" ? frm.doc.paid_from : frm.doc.paid_to,

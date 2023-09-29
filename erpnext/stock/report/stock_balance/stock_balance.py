@@ -91,26 +91,61 @@ def execute(filters=None):
 			data.append(report_data)
 
 	add_additional_uom_columns(columns, data, include_uom, conversion_factors)
+	if filters.get("group_by_brand"):
+		data = group_by_brand(data)
 	return columns, data
+
+
+def group_by_brand(data):
+	grouped_data = {"Brand Not Set":{}}
+	for i in data:
+		key = "Brand Not Set"
+		if i.get("brand"):
+			key = i['brand']
+			grouped_data.setdefault(i['brand'], {})
+		else:
+			i['brand'] = "Brand Not Set"
+			grouped_data.setdefault("Brand Not Set", {})
+		for j in i:
+			if type(i.get(j)) in [int, float]:
+				if j in grouped_data[key]:
+					grouped_data[key][j] +=  i[j]
+				else:
+					grouped_data[key][j] =  i[j]
+			else:
+				grouped_data[key][j] =  i[j]
+	if "Brand Not Set" in grouped_data and not grouped_data["Brand Not Set"]:
+		del grouped_data["Brand Not Set"]
+	return list(grouped_data.values())
 
 
 def get_columns(filters):
 	"""return columns"""
+	hide = filters.get("group_by_brand") or 0
 	columns = [
 		{
 			"label": _("Item"),
 			"fieldname": "item_code",
 			"fieldtype": "Link",
 			"options": "Item",
-			"width": 100,
+			"width": 300,
+			"hidden": hide
 		},
-		{"label": _("Item Name"), "fieldname": "item_name", "width": 150},
+		{
+			"label": _("Brand"),
+			"fieldname": "brand",
+			"fieldtype": "Link",
+			"options": "Brand",
+			"width": 300,
+		},
+		{"label": _("Item Name"), "fieldname": "item_name", "width": 150, "hidden":1},
 		{
 			"label": _("Item Group"),
 			"fieldname": "item_group",
 			"fieldtype": "Link",
 			"options": "Item Group",
-			"width": 100,
+			"width": 200,
+			"hidden": hide
 		},
 		{
 			"label": _("Warehouse"),
@@ -118,6 +153,7 @@ def get_columns(filters):
 			"fieldtype": "Link",
 			"options": "Warehouse",
 			"width": 100,
+			"hidden":1 if filters.get("warehouse") else 0,
 		},
 		{
 			"label": _("Stock UOM"),
@@ -125,12 +161,29 @@ def get_columns(filters):
 			"fieldtype": "Link",
 			"options": "UOM",
 			"width": 90,
+			"hidden":1
 		},
+		{
+			"label": _("In Qty"),
+			"fieldname": "in_qty",
+			"fieldtype": "Float",
+			"width": 100,
+			"convertible": "qty",
+		},
+		{"label": _("In Value"), "fieldname": "in_val", "fieldtype": "Float", "width": 100},
+		{
+			"label": _("Out Qty"),
+			"fieldname": "out_qty",
+			"fieldtype": "Float",
+			"width": 100,
+			"convertible": "qty",
+		},
+		{"label": _("Out Value"), "fieldname": "out_val", "fieldtype": "Float", "width": 100},
 		{
 			"label": _("Balance Qty"),
 			"fieldname": "bal_qty",
 			"fieldtype": "Float",
-			"width": 100,
+			"width": 150,
 			"convertible": "qty",
 		},
 		{
@@ -139,44 +192,33 @@ def get_columns(filters):
 			"fieldtype": "Currency",
 			"width": 100,
 			"options": "currency",
+			# "hidden":1
 		},
 		{
 			"label": _("Opening Qty"),
 			"fieldname": "opening_qty",
 			"fieldtype": "Float",
-			"width": 100,
+			"width": 150,
 			"convertible": "qty",
 		},
+		
 		{
 			"label": _("Opening Value"),
 			"fieldname": "opening_val",
 			"fieldtype": "Currency",
 			"width": 110,
 			"options": "currency",
+			# "hidden":1
 		},
-		{
-			"label": _("In Qty"),
-			"fieldname": "in_qty",
-			"fieldtype": "Float",
-			"width": 80,
-			"convertible": "qty",
-		},
-		{"label": _("In Value"), "fieldname": "in_val", "fieldtype": "Float", "width": 80},
-		{
-			"label": _("Out Qty"),
-			"fieldname": "out_qty",
-			"fieldtype": "Float",
-			"width": 80,
-			"convertible": "qty",
-		},
-		{"label": _("Out Value"), "fieldname": "out_val", "fieldtype": "Float", "width": 80},
+		
 		{
 			"label": _("Valuation Rate"),
 			"fieldname": "val_rate",
 			"fieldtype": "Currency",
-			"width": 90,
+			"width": 120,
 			"convertible": "rate",
 			"options": "currency",
+			"hidden": hide
 		},
 		{
 			"label": _("Reorder Level"),
@@ -184,6 +226,7 @@ def get_columns(filters):
 			"fieldtype": "Float",
 			"width": 80,
 			"convertible": "qty",
+			"hidden":1
 		},
 		{
 			"label": _("Reorder Qty"),
@@ -191,6 +234,7 @@ def get_columns(filters):
 			"fieldtype": "Float",
 			"width": 80,
 			"convertible": "qty",
+			"hidden":1
 		},
 		{
 			"label": _("Company"),
@@ -198,6 +242,7 @@ def get_columns(filters):
 			"fieldtype": "Link",
 			"options": "Company",
 			"width": 100,
+			"hidden":1
 		},
 	]
 
@@ -265,11 +310,12 @@ def get_stock_ledger_entries(filters, items):
 		select
 			sle.item_code, warehouse, sle.posting_date, sle.actual_qty, sle.valuation_rate,
 			sle.company, sle.voucher_type, sle.qty_after_transaction, sle.stock_value_difference,
-			sle.item_code as name, sle.voucher_no, sle.stock_value, sle.batch_no
+			sle.item_code as name, sle.voucher_no, sle.stock_value, sle.batch_no, it.brand_name as brand
 		from
 			`tabStock Ledger Entry` sle
+			left outer join `tabItem` it on sle.item_code = it.name
 		where sle.docstatus < 2 %s %s
-		and is_cancelled = 0
+		and sle.is_cancelled = 0
 		order by sle.posting_date, sle.posting_time, sle.creation, sle.actual_qty"""
 		% (item_conditions_sql, conditions),  # nosec
 		as_dict=1,
@@ -278,6 +324,7 @@ def get_stock_ledger_entries(filters, items):
 
 def get_item_warehouse_map(filters, sle):
 	iwb_map = {}
+	Item_Voucher_Wise_Value = {}
 	from_date = getdate(filters.get("from_date"))
 	to_date = getdate(filters.get("to_date"))
 
@@ -297,6 +344,7 @@ def get_item_warehouse_map(filters, sle):
 					"bal_qty": 0.0,
 					"bal_val": 0.0,
 					"val_rate": 0.0,
+					"brand":d.brand
 				}
 			)
 
@@ -318,20 +366,42 @@ def get_item_warehouse_map(filters, sle):
 			qty_dict.opening_val += value_diff
 
 		elif d.posting_date >= from_date and d.posting_date <= to_date:
+			Item_Voucher_Wise_Value.setdefault("IN", {}).setdefault(d.item_code, {})
+			Item_Voucher_Wise_Value.setdefault("OUT", {}).setdefault(d.item_code, {})
 			if flt(qty_diff, float_precision) >= 0:
 				qty_dict.in_qty += qty_diff
-				qty_dict.in_val += value_diff
+				qty_dict.in_val = get_stock_value(d,  Item_Voucher_Wise_Value, "IN")
 			else:
 				qty_dict.out_qty += abs(qty_diff)
-				qty_dict.out_val += abs(value_diff)
+				qty_dict.out_val = get_stock_value(d, Item_Voucher_Wise_Value, "OUT")
 
 		qty_dict.val_rate = d.valuation_rate
 		qty_dict.bal_qty += qty_diff
 		qty_dict.bal_val += value_diff
+		if d.voucher_type == "Stock Reconciliation":
+			qty_dict.bal_qty = flt(d.qty_after_transaction)
+			qty_dict.bal_val = flt(d.stock_value)
 
 	iwb_map = filter_items_with_no_transactions(iwb_map, float_precision)
-
 	return iwb_map
+
+def get_stock_value(sle, Item_Voucher_Wise_Value, type):
+	if(not sle.voucher_type and not sle.voucher_no):
+		return 0
+	Item_Voucher_Wise_Value[type][sle.item_code].setdefault(sle.voucher_no, 0)
+	doctype = ""
+	amt_field = ""
+	if(sle.voucher_type in ["Sales Invoice", "Purchase Invoice", "Purchase Receipt", "Stock Reconciliation", "Delivery Note"]):
+		doctype = sle.voucher_type + " Item"
+		amt_field = "amount"
+	elif(sle.voucher_type == "Stock Entry"):
+		doctype = "Stock Entry Detail" 
+		amt_field = "amount"
+	if(doctype and amt_field):
+		Item_Voucher_Wise_Value[type][sle.item_code][sle.voucher_no] = abs(frappe.db.get_value(doctype, {"parent":sle.voucher_no, "item_code":sle.item_code}, f"sum({amt_field})") or 0)
+	
+	return sum(Item_Voucher_Wise_Value[type][sle.item_code].values())
+
 
 
 def filter_items_with_no_transactions(iwb_map, float_precision):
@@ -340,6 +410,8 @@ def filter_items_with_no_transactions(iwb_map, float_precision):
 
 		no_transactions = True
 		for key, val in iteritems(qty_dict):
+			if key == "brand":
+				continue
 			val = flt(val, float_precision)
 			qty_dict[key] = val
 			if key != "val_rate" and val:
@@ -354,6 +426,8 @@ def filter_items_with_no_transactions(iwb_map, float_precision):
 def get_items(filters):
 	"Get items based on item code, item group or brand."
 	conditions = []
+	if(filters.get("brand")):
+		conditions.append(f""" (item.brand='{filters.get("brand")}' or item.brand_name = '{filters.get("brand")}') """)
 	if filters.get("item_code"):
 		conditions.append("item.name=%(item_code)s")
 	else:

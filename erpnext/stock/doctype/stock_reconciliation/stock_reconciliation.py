@@ -102,17 +102,17 @@ class StockReconciliation(StockController):
 
 		items = list(filter(lambda d: _changed(d), self.items))
 
-		if not items:
-			frappe.throw(
-				_("None of the items have any change in quantity or value."),
-				EmptyStockReconciliationItemsError,
-			)
+		# if not items:
+		# 	frappe.throw(
+		# 		_("None of the items have any change in quantity or value."),
+		# 		EmptyStockReconciliationItemsError,
+		# 	)
 
-		elif len(items) != len(self.items):
-			self.items = items
-			for i, item in enumerate(self.items):
-				item.idx = i + 1
-			frappe.msgprint(_("Removed items with no change in quantity or value."))
+		# elif len(items) != len(self.items):
+		# 	self.items = items
+		# 	for i, item in enumerate(self.items):
+		# 		item.idx = i + 1
+		# 	frappe.msgprint(_("Removed items with no change in quantity or value."))
 
 	def validate_data(self):
 		def _get_msg(row_num, msg):
@@ -536,7 +536,7 @@ class StockReconciliation(StockController):
 			self.append("items", item)
 
 	def submit(self):
-		if len(self.items) > 100:
+		if len(self.items) > 100 and frappe.get_value(self.doctype, self.name, "docstatus") != 1:
 			msgprint(
 				_(
 					"The task has been enqueued as a background job. In case there is any issue on processing in background, the system will add a comment about the error on this Stock Reconciliation and revert to the Draft stage"

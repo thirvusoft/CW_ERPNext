@@ -1185,7 +1185,7 @@ class StockEntry(StockController):
 	def get_item_details(self, args=None, for_update=False):
 		item = frappe.db.sql(
 			"""select i.name, i.stock_uom, i.description, i.image, i.item_name, i.item_group,
-				i.has_batch_no, i.sample_quantity, i.has_serial_no, i.allow_alternative_item,
+				i.has_batch_no, i.sample_quantity, i.has_serial_no, i.allow_alternative_item, i.standard_rate,
 				id.expense_account, id.buying_cost_center
 			from `tabItem` i LEFT JOIN `tabItem Default` id ON i.name=id.parent and id.company=%s
 			where i.name=%s
@@ -1219,7 +1219,7 @@ class StockEntry(StockController):
 				"conversion_factor": 1,
 				"batch_no": "",
 				"actual_qty": 0,
-				"basic_rate": 0,
+				"basic_rate": item.get("standard_rate") or 0,
 				"serial_no": "",
 				"has_serial_no": item.has_serial_no,
 				"has_batch_no": item.has_batch_no,
@@ -1275,7 +1275,8 @@ class StockEntry(StockController):
 
 			if subcontract_items and len(subcontract_items) == 1:
 				ret["subcontracted_item"] = subcontract_items[0].main_item_code
-
+		if not ret.get("basic_rate"):
+			ret["basic_rate"] = item.get("standard_rate") or 0
 		return ret
 
 	@frappe.whitelist()

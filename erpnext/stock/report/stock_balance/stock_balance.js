@@ -36,6 +36,13 @@ frappe.query_reports["Stock Balance"] = {
 			"options": "Item Group"
 		},
 		{
+			"fieldname": "brand",
+			"label": __("Brand"),
+			"fieldtype": "Link",
+			"width": "80",
+			"options": "Brand"
+		},
+		{
 			"fieldname": "item_code",
 			"label": __("Item"),
 			"fieldtype": "Link",
@@ -89,6 +96,11 @@ frappe.query_reports["Stock Balance"] = {
 			"label": __('Show Stock Ageing Data'),
 			"fieldtype": 'Check'
 		},
+		{
+			"fieldname": 'group_by_brand',
+			"label": __('Group By Brand'),
+			"fieldtype": 'Check'
+		},
 	],
 
 	"formatter": function (value, row, column, data, default_formatter) {
@@ -100,7 +112,9 @@ frappe.query_reports["Stock Balance"] = {
 		else if (column.fieldname == "in_qty" && data && data.in_qty > 0) {
 			value = "<span style='color:green'>" + value + "</span>";
 		}
-
+		else if (column.fieldname == "brand" && data && data.brand == "Brand Not Set") {
+			value = "<b>" + value + "</b>"
+		}
 		return value;
 	}
 };

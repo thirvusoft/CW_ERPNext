@@ -170,7 +170,11 @@ def get_items(filters):
 		filters,
 		as_dict=1,
 	)
-
+	hsn_wise_alternate_uom = {i["hsn"]:i["uom"] for i in frappe.get_all("Alternate UOM For HSN in Report", fields=["hsn", "uom"])}
+	for i in items:
+		if i['gst_hsn_code'] in hsn_wise_alternate_uom:
+			i['stock_uom'] = hsn_wise_alternate_uom[i['gst_hsn_code']]
+			i['stock_qty'] = 0
 	return items
 
 

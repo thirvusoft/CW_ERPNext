@@ -1,6 +1,7 @@
 {
  "actions": [],
- "creation": "2020-12-02 10:13:02.148040",
+ "autoname": "field:company",
+ "creation": "2023-09-20 19:06:05.590760",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
@@ -23,7 +24,8 @@
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "options": "Company"
+   "options": "Company",
+   "unique": 1
   },
   {
    "fieldname": "bank_account",
@@ -87,9 +89,8 @@
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
- "issingle": 1,
  "links": [],
- "modified": "2021-04-21 11:13:49.831769",
+ "modified": "2023-09-20 19:06:23.906826",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Bank Reconciliation Tool",

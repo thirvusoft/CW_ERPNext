@@ -1830,7 +1830,7 @@ class AccountsController(TransactionBase):
 		party_type, party = self.get_party()
 		return frappe.db.get_value(
 			doctype="Party Link",
-			filters={"secondary_role": party_type, "secondary_party": party},
+			filters={"secondary_role": party_type, "secondary_party": party, "company":self.company},
 			fieldname=["primary_role", "primary_party"],
 			as_dict=True,
 		)
@@ -1847,9 +1847,11 @@ class AccountsController(TransactionBase):
 		jv.posting_date = self.posting_date
 		jv.company = self.company
 		jv.remark = "Adjustment for {} {}".format(self.doctype, self.name)
-
+		jv.common_party_entry = 1
 		reconcilation_entry = frappe._dict()
+		reconcilation_entry.common_party_entry = 1
 		advance_entry = frappe._dict()
+		advance_entry.common_party_entry = 1
 
 		reconcilation_entry.account = secondary_account
 		reconcilation_entry.party_type = secondary_party_type
@@ -2389,7 +2391,10 @@ def set_order_defaults(
 	item = frappe.get_doc("Item", trans_item.get("item_code"))
 
 	for field in ("item_code", "item_name", "description", "item_group"):
-		child_item.update({field: item.get(field)})
+		if field == "item_code":
+			child_item.update({field: item.get("name")})
+		else:
+			child_item.update({field: item.get(field)})
 
 	date_fieldname = "delivery_date" if child_doctype == "Sales Order Item" else "schedule_date"
 	child_item.update({date_fieldname: trans_item.get(date_fieldname) or p_doc.get(date_fieldname)})
@@ -2732,8 +2737,8 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 		parent.validate_budget()
 		if parent.is_against_so():
 			parent.update_status_updater()
-	else:
-		parent.check_credit_limit()
+	# else:
+	# 	parent.check_credit_limit()
 
 	# reset index of child table
 	for idx, row in enumerate(parent.get(child_docname), start=1):

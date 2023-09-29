@@ -11,10 +11,11 @@ def get_data():
 			"Landed Cost Voucher": "receipt_document",
 			"Purchase Invoice": "return_against",
 			"Auto Repeat": "reference_document",
+			"Purchase Receipt":"purchase_invoice"
 		},
 		"internal_links": {
 			"Purchase Order": ["items", "purchase_order"],
-			"Purchase Receipt": ["items", "purchase_receipt"],
+			# "Purchase Receipt": ["items", "purchase_receipt"],
 		},
 		"transactions": [
 			{"label": _("Payment"), "items": ["Payment Entry", "Payment Request", "Journal Entry"]},

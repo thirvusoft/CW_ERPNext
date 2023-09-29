@@ -104,16 +104,20 @@ erpnext.selling.SellingController = erpnext.TransactionController.extend({
 		var me = this;
 		erpnext.utils.get_party_details(this.frm, null, null, function() {
 		});
-		erpnext.utils.get_address_display(this.frm, "customer_address");
 		erpnext.utils.set_taxes_from_address(this.frm, "customer_address", "customer_address", "shipping_address_name");
+	
+		erpnext.utils.get_address_display(this.frm, "customer_address");
+		
 	},
 
 	shipping_address_name: function() {
 		var me = this;
 		erpnext.utils.get_party_details(this.frm, null, null, function() {
 		});
-		erpnext.utils.get_address_display(this.frm, "shipping_address_name", "shipping_address");
 		erpnext.utils.set_taxes_from_address(this.frm, "shipping_address_name", "customer_address", "shipping_address_name");
+		
+		
+		erpnext.utils.get_address_display(this.frm, "shipping_address_name", "shipping_address");
 	},
 
 	dispatch_address_name: function() {

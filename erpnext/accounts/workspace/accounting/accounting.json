@@ -137,8 +137,8 @@
    "dependencies": "Sales Invoice",
    "hidden": 0,
    "is_query_report": 1,
-   "label": "Customer Ledger Summary",
-   "link_to": "Customer Ledger Summary",
+   "label": "Party Ledger",
+   "link_to": "Party Ledger",
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
@@ -216,16 +216,6 @@
    "is_query_report": 1,
    "label": "Accounts Receivable Summary",
    "link_to": "Accounts Receivable Summary",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "Sales Invoice",
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Sales Register",
-   "link_to": "Sales Register",
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
@@ -353,6 +343,15 @@
    "is_query_report": 1,
    "label": "Received Items To Be Billed",
    "link_to": "Received Items To Be Billed",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": " Customer Wise Product Incentive",
+   "link_to": "Customer Wise Product Incentive",
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
@@ -999,8 +998,8 @@
    "type": "Link"
   }
  ],
- "modified": "2023-03-21 06:18:30.066866",
- "modified_by": "Administrator",
+ "modified": "2023-09-01 12:46:39.841359",
+ "modified_by": "shankar@thirvusoft.in",
  "module": "Accounts",
  "name": "Accounting",
  "onboarding": "Accounts",

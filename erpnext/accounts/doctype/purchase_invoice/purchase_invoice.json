@@ -8,6 +8,7 @@
  "document_type": "Document",
  "engine": "InnoDB",
  "field_order": [
+  "is_updated",
   "series_section_section",
   "title",
   "naming_series",
@@ -48,11 +49,11 @@
   "shipping_address_display",
   "billing_address",
   "billing_address_display",
+  "buying_price_list",
   "currency_and_price_list",
   "currency",
   "conversion_rate",
   "column_break2",
-  "buying_price_list",
   "price_list_currency",
   "plc_conversion_rate",
   "ignore_pricing_rule",
@@ -1509,13 +1510,21 @@
   {
    "fieldname": "column_break_73",
    "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "is_updated",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Updated"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 204,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-06-27 11:02:07.625782",
+ "modified": "2023-08-29 11:35:19.074357",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",

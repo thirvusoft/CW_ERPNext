@@ -8,8 +8,9 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "type_of_payment",
+  "section_break_1",
   "naming_series",
+  "type_of_payment",
   "payment_type",
   "mode_of_payment",
   "is_bank_mode",
@@ -740,12 +741,17 @@
    "fieldtype": "Data",
    "hidden": 1,
    "label": "Is Bank Mode"
+  },
+  {
+   "fieldname": "section_break_1",
+   "fieldtype": "Section Break",
+   "hidden": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-07-14 14:01:44.622901",
+ "modified": "2023-08-22 15:30:00.599616",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",

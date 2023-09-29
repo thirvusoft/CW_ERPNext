@@ -65,7 +65,14 @@ frappe.query_reports["Sales Analytics"] = {
 			],
 			default: "Monthly",
 			reqd: 1
-		}
+		},
+		{
+			fieldname: "branch",
+			label: __("Branch"),
+			fieldtype: "Link",
+			options: "Branch",
+			default: frappe.defaults.get_user_default("Branch"),
+		},
 	],
 	after_datatable_render: function(datatable_obj) {
 		$(datatable_obj.wrapper).find(".dt-row-0").find('input[type=checkbox]').click();

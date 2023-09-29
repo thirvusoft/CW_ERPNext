@@ -53,7 +53,36 @@ def get_pricing_rules(args, doc=None):
 		pricing_rule = filter_pricing_rules(args, pricing_rules, doc)
 		if pricing_rule:
 			rules.append(pricing_rule)
+		pr_to_remove = []
+	
+	for i in rules:
+		if(i.get("valid_qty") and doc):
+			pricing_rule_applied_qty=frappe.db.sql(f""" 
+					  	select sum(qty) as qty, parent
+					  	from `tabSales Invoice Item`
+					  	where pricing_rules like "%{i.name}%"
+						and docstatus = 1 
+						and parent != "{doc.name}" and item_code = "{args.get('item_code')}"
+						""")
+			
+			if(len(pricing_rule_applied_qty) and len(pricing_rule_applied_qty[0])):
+				pricing_rule_applied_qty = pricing_rule_applied_qty[0][0] or 0
 
+			for j in doc.items:
+				if(
+					args.get("item_code") == j.get("item_code") and 
+					((j.get("pricing_rules") and i.name in j.get("pricing_rules")) or j.name == args.child_docname) and
+					j.idx <= (args.get("idx") or len(doc.items) or 0)
+				):
+					pricing_rule_applied_qty += (j.get("qty") or 1)
+
+			if(pricing_rule_applied_qty > i.valid_qty or (args.get('qty') or 0) > i.valid_qty):
+				pr_to_remove.append(i)
+
+
+	if(pr_to_remove):
+		for i in rules:
+			i.update({"remove_for_qty_validation":1})
 	return rules
 
 
@@ -147,7 +176,7 @@ def _get_pricing_rules(apply_on, args, values):
 	pricing_rules = (
 		frappe.db.sql(
 			"""select `tabPricing Rule`.*,
-			{child_doc}.{apply_on_field}, {child_doc}.uom
+			{child_doc}.{apply_on_field}, {child_doc}.uom, {child_doc}.valid_qty
 		from `tabPricing Rule`, {child_doc}
 		where ({item_conditions} or (`tabPricing Rule`.apply_rule_on_other is not null
 			and `tabPricing Rule`.{apply_on_other_field}=%({apply_on_field})s) {item_variant_condition})

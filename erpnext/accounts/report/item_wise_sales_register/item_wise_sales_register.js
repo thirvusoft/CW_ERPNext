@@ -24,6 +24,12 @@ frappe.query_reports["Item-wise Sales Register"] = {
 			"options": "Customer"
 		},
 		{
+			"fieldname": "shipping_address",
+			"label": __("Shipping Address"),
+			"fieldtype": "Link",
+			"options": "Address"
+		},
+		{
 			"fieldname": "company",
 			"label": __("Company"),
 			"fieldtype": "Link",
@@ -60,7 +66,7 @@ frappe.query_reports["Item-wise Sales Register"] = {
 			"label": __("Group By"),
 			"fieldname": "group_by",
 			"fieldtype": "Select",
-			"options": ["Customer Group", "Customer", "Item Group", "Item", "Territory", "Invoice"]
+			"options": ["Customer Group", "Customer", "Item Group", "Item", "Brand","Territory", "Invoice"]
 		}
 	],
 	"formatter": function(value, row, column, data, default_formatter) {

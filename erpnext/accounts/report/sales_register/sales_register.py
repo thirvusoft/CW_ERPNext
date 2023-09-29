@@ -16,14 +16,28 @@ from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (
 def execute(filters=None):
 	return _execute(filters)
 
+def get_child_groups(parent):
+		childs = []
+		parent_grps = [parent]
+		for i in parent_grps:
+			childs.extend(frappe.get_all('Item Group', filters={'parent_item_group':['in', i]}, pluck='name'))
+			parent_grps.extend(frappe.get_all('Item Group', filters={'parent_item_group':['in', i], 'is_group':1}, pluck='name'))
+		return {i:parent for i in childs+parent_grps}
+
 
 def _execute(filters, additional_table_columns=None, additional_query_columns=None):
 	if not filters:
 		filters = frappe._dict({})
 
 	invoice_list = get_invoices(filters, additional_query_columns)
+	item_groups = get_child_item_groups([i['name'] for i in invoice_list], filters)
+	top_parent = frappe.get_list("Item Group", filters={"parent_item_group":"All Item Groups"}, pluck='name')
+	all_item_groups = {}
+	for i in top_parent:
+		all_item_groups.update(get_child_groups(i))
+	show_ig_in_columns = {i:0 for i in top_parent}
 	columns, income_accounts, tax_accounts, unrealized_profit_loss_accounts = get_columns(
-		invoice_list, additional_table_columns
+		invoice_list, additional_table_columns, show_ig_in_columns
 	)
 
 	if not invoice_list:
@@ -42,6 +56,10 @@ def _execute(filters, additional_table_columns=None, additional_query_columns=No
 	mode_of_payments = get_mode_of_payments([inv.name for inv in invoice_list])
 
 	data = []
+	
+	
+
+
 	for inv in invoice_list:
 		# invoice details
 		sales_order = list(set(invoice_so_dn_map.get(inv.name, {}).get("sales_order", [])))
@@ -56,7 +74,10 @@ def _execute(filters, additional_table_columns=None, additional_query_columns=No
 			"customer_name": inv.customer_name,
 			"billing_address_gstin":inv.billing_address_gstin
 		}
-
+		if inv.get("customer_address") or inv.get("shipping_address_name"):
+			row.update({
+				"party_branch":frappe.db.get_value("Address", inv.get("customer_address") or inv.get("shipping_address_name"), "branch")
+			})
 		if additional_query_columns:
 			for col in additional_query_columns:
 				row.update({col: inv.get(col)})
@@ -125,13 +146,21 @@ def _execute(filters, additional_table_columns=None, additional_query_columns=No
 				"outstanding_amount": inv.outstanding_amount,
 			}
 		)
+		for i in top_parent:
+			row.setdefault(frappe.scrub(i), 0)
+		for i in item_groups[row['invoice']]:
+			row.setdefault(frappe.scrub(all_item_groups[i]), 0)
+			row[frappe.scrub(all_item_groups[i])] += item_groups[row['invoice']][i]
+			show_ig_in_columns[all_item_groups[i]] = 1
 
 		data.append(row)
-
+	columns, income_accounts, tax_accounts, unrealized_profit_loss_accounts = get_columns(
+		invoice_list, additional_table_columns, show_ig_in_columns, filters
+	)
 	return columns, data
 
 
-def get_columns(invoice_list, additional_table_columns):
+def get_columns(invoice_list, additional_table_columns, show_ig_in_columns, filters={}):
 	"""return columns based on filters"""
 	columns = [
 		{
@@ -140,7 +169,14 @@ def get_columns(invoice_list, additional_table_columns):
 			"fieldtype": "Link",
 			"options": "Sales Invoice",
 			"width": 120,
-		},
+		}]
+	fieldtype='Int'
+	if(filters.get("sum_of_ig") == "Amount"):
+		fieldtype="Currency"
+	for i in show_ig_in_columns:
+		if(show_ig_in_columns[i]):
+			columns.append({"fieldname": frappe.scrub(i), "label": i, "fieldtype": fieldtype, "width": 120, "default":0, "show_in_custom_report":1, "hidden":1},)
+	columns+=[
 		{"label": _("Posting Date"), "fieldname": "posting_date", "fieldtype": "Date", "width": 80},
 		{
 			"label": _("Customer"),
@@ -150,6 +186,11 @@ def get_columns(invoice_list, additional_table_columns):
 			"width": 120,
 		},
 		{"label": _("Customer Name"), "fieldname": "customer_name", "fieldtype": "Data", "width": 120},
+		{
+			"fieldname":"party_branch",
+			"label":"Party Branch",
+			"fieldtype":"Data"
+		},
 		{
 			"fieldname": "billing_address_gstin",
 			"label": "GSTIN/UIN of Recipient",
@@ -245,7 +286,7 @@ def get_columns(invoice_list, additional_table_columns):
 		},
 		{"fieldname": "currency", "label": _("Currency"), "fieldtype": "Data", "width": 80},
 	]
-
+	
 	income_accounts = []
 	tax_accounts = []
 	income_columns = []
@@ -390,10 +431,28 @@ def get_conditions(filters):
 
 	if filters.get("company_gstin"):
 		conditions += " and company_gstin = %(company_gstin)s"
+	
+	if filters.get("party_branch"):
+		addr_list=frappe.get_all("Address", filters={"branch":filters.get("party_branch")}, pluck="name")
+		if len(addr_list) == 1:
+			conditions += f""" and (case when ifnull(shipping_address_name, '') != '' then shipping_address_name else customer_address end) = "{addr_list[0]}" """
+		if len(addr_list) > 1:
+			conditions += f""" and (case when ifnull(shipping_address_name, '') != '' then shipping_address_name else customer_address end) in {tuple(addr_list)} """
 
-	def get_sales_invoice_item_field_condition(field, table="Sales Invoice Item") -> str:
+
+	def get_sales_invoice_item_field_condition(field, table="Sales Invoice Item", filters={}) -> str:
 		if not filters.get(field) or field in accounting_dimensions_list:
 			return ""
+		if field == "item_group" and filters:
+			childs = []
+			parent_grps = [filters.get("item_group")]
+			for i in parent_grps:
+				childs.extend(frappe.get_all('Item Group', filters={'parent_item_group':['in', i]}, pluck='name'))
+				parent_grps.extend(frappe.get_all('Item Group', filters={'parent_item_group':['in', i], 'is_group':1}, pluck='name'))
+			childs += parent_grps
+			return f""" and exists(select name from `tab{table}`
+				where parent=`tabSales Invoice`.name
+					and ifnull(`tab{table}`.{field}, '') in ("{'","'.join(childs)}") )"""
 		return f""" and exists(select name from `tab{table}`
 				where parent=`tabSales Invoice`.name
 					and ifnull(`tab{table}`.{field}, '') = %({field})s)"""
@@ -402,7 +461,7 @@ def get_conditions(filters):
 	conditions += get_sales_invoice_item_field_condition("cost_center")
 	conditions += get_sales_invoice_item_field_condition("warehouse")
 	conditions += get_sales_invoice_item_field_condition("brand")
-	conditions += get_sales_invoice_item_field_condition("item_group")
+	conditions += get_sales_invoice_item_field_condition("item_group", filters=filters)
 
 	if accounting_dimensions:
 		common_condition = """
@@ -436,7 +495,7 @@ def get_invoices(filters, additional_query_columns):
 	conditions = get_conditions(filters)
 	return frappe.db.sql(
 		"""
-		select name, posting_date, debit_to, project, customer, gst_category,
+		select name, customer_address, shipping_address_name, posting_date, debit_to, project, customer, gst_category,
 		customer_name,company_gstin as billing_address_gstin, owner, remarks, territory, tax_id, customer_group,
 		base_net_total, base_grand_total, base_rounded_total, outstanding_amount,
 		is_internal_customer, represents_company, company {0}
@@ -449,6 +508,31 @@ def get_invoices(filters, additional_query_columns):
 		as_dict=1,
 	)
 
+def get_child_item_groups(invoices, filters={}):
+	if(not invoices):
+		return {}
+	parent_cond=""
+	if(len(invoices) == 1):
+		parent_cond=f"""parent = "{invoices[0]}" """
+	else:
+		parent_cond=f"""parent in {tuple(invoices)} """
+	field = "qty"
+	if(filters.get("sum_of_ig") == "Amount"):
+		field="amount"
+	item_groups = frappe.db.sql(f""" 
+					Select item_group, parent, sum({field}) as qty
+			     	from `tabSales Invoice Item`
+			     	where {parent_cond}
+					Group By item_group, parent
+					""", as_dict=1)
+	return invoice_item_group_map(item_groups)
+
+def invoice_item_group_map(item_groups):
+	inv_ig_map = {}
+	for i in item_groups:
+		inv_ig_map.setdefault(i['parent'], {}).setdefault(i['item_group'], 0)
+		inv_ig_map[i["parent"]][i['item_group']] += i['qty']
+	return inv_ig_map
 
 def get_invoice_income_map(invoice_list):
 	income_details = frappe.db.sql(

@@ -1594,6 +1594,7 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 					"item_group": d.item_group,
 					"brand": d.brand,
 					"qty": d.qty,
+					"rate":d.rate,
 					"stock_qty": d.stock_qty,
 					"uom": d.uom,
 					"stock_uom": d.stock_uom,
@@ -1632,13 +1633,14 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 		for(var i=0, l=children.length; i<l; i++) {
 			var d = children[i] ;
 			let item_row = frappe.get_doc(d.doctype, d.name);
+			console.log(item_row)
 			var existing_pricing_rule = frappe.model.get_value(d.doctype, d.name, "pricing_rules");
 			for(var k in d) {
 				var v = d[k];
 				if (["doctype", "name"].indexOf(k)===-1) {
-					if(k=="price_list_rate") {
-						item_row['rate'] = v;
-					}
+					// if(k=="price_list_rate") {
+					// 	item_row['rate'] = v;
+					// }
 
 					if (k !== 'free_item_data') {
 						item_row[k] = v;

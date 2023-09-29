@@ -868,12 +868,12 @@ class calculate_taxes_and_totals(object):
 					item.margin_type = None
 					item.margin_rate_or_amount = 0.0
 
-			if not item.pricing_rules and flt(item.rate) > flt(item.price_list_rate):
-				item.margin_type = "Amount"
-				item.margin_rate_or_amount = flt(
-					item.rate - item.price_list_rate, item.precision("margin_rate_or_amount")
-				)
-				item.rate_with_margin = item.rate
+			if not item.pricing_rules and flt(item.rate) > flt(item.price_list_rate):pass
+				# item.margin_type = "Amount"
+				# item.margin_rate_or_amount = flt(
+				# 	item.rate - item.price_list_rate, item.precision("margin_rate_or_amount")
+				# )
+				# item.rate_with_margin = item.rate
 
 			elif item.margin_type and item.margin_rate_or_amount:
 				margin_value = (

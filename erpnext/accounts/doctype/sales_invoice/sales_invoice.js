@@ -272,6 +272,7 @@ erpnext.accounts.SalesInvoiceController = erpnext.selling.SellingController.exte
 			"erpnext.accounts.party.get_party_details", {
 				posting_date: this.frm.doc.posting_date,
 				party: this.frm.doc.customer,
+				branch:this.frm.doc.branch,
 				party_type: "Customer",
 				account: this.frm.doc.debit_to,
 				price_list: this.frm.doc.selling_price_list,
@@ -295,8 +296,45 @@ erpnext.accounts.SalesInvoiceController = erpnext.selling.SellingController.exte
 			});
 		}
 	},
+	branch: function(){
+		if (this.frm.doc.is_pos){
+			var pos_profile = this.frm.doc.pos_profile;
+		}
+		var me = this;
+		if(this.frm.updating_party_details) return;
+		erpnext.utils.get_party_details(this.frm,
+			"erpnext.accounts.party.get_party_details", {
+				posting_date: this.frm.doc.posting_date,
+				party: this.frm.doc.customer,
+				// branch:this.frm.doc.branch,
+				party_type: "Customer",
+				account: this.frm.doc.debit_to,
+				price_list: this.frm.doc.selling_price_list,
+				pos_profile: pos_profile,
+				party_address:  this.frm.doc.customer_address
+			}, function() {
+			});
+	},
 	customer_address: function(){
-		this.frm.trigger("customer")
+		erpnext.utils.get_address_display(this.frm, "customer_address");
+			if (this.frm.doc.is_pos){
+				var pos_profile = this.frm.doc.pos_profile;
+			}
+			var me = this;
+			if(this.frm.updating_party_details) return;
+			erpnext.utils.get_party_details(this.frm,
+				"erpnext.accounts.party.get_party_details", {
+					posting_date: this.frm.doc.posting_date,
+					party: this.frm.doc.customer,
+					// branch:this.frm.doc.branch,
+					party_type: "Customer",
+					account: this.frm.doc.debit_to,
+					price_list: this.frm.doc.selling_price_list,
+					pos_profile: pos_profile,
+					party_address:  this.frm.doc.customer_address
+				}, function() {
+				});
+		
 	},
 	make_inter_company_invoice: function() {
 		frappe.model.open_mapped_doc({
@@ -770,8 +808,8 @@ frappe.ui.form.on('Sales Invoice', {
 
 	hide_fields: function(frm) {
 		let doc = frm.doc;
-		var parent_fields = ['project', 'due_date', 'is_opening', 'source', 'total_advance', 'get_advances',
-		'advances', 'from_date', 'to_date'];
+		var parent_fields = ['project', 'due_date', 'is_opening', 'source', 'total_advance',
+		'from_date', 'to_date'];
 
 		if(cint(doc.is_pos) == 1) {
 			hide_field(parent_fields);

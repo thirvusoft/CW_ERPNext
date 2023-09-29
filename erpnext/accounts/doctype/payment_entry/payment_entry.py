@@ -1257,6 +1257,7 @@ def get_outstanding_reference_documents(args):
 		args.get("party_account"),
 		filters=args,
 		condition=condition,
+		party_branch = args.get("party_branch")
 	)
 
 	outstanding_invoices = split_invoices_based_on_payment_terms(outstanding_invoices)

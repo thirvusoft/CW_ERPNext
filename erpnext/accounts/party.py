@@ -42,6 +42,7 @@ class DuplicatePartyAccountError(frappe.ValidationError):
 def get_party_details(
 	party=None,
 	account=None,
+	branch=None,
 	party_type="Customer",
 	company=None,
 	posting_date=None,
@@ -57,6 +58,7 @@ def get_party_details(
 	pos_profile=None,
 ):
 
+
 	if not party:
 		return {}
 	if not frappe.db.exists(party_type, party):
@@ -64,6 +66,7 @@ def get_party_details(
 	return _get_party_details(
 		party,
 		account,
+		branch,
 		party_type,
 		company,
 		posting_date,
@@ -83,6 +86,7 @@ def get_party_details(
 def _get_party_details(
 	party=None,
 	account=None,
+	branch=None,
 	party_type="Customer",
 	company=None,
 	posting_date=None,
@@ -110,7 +114,8 @@ def _get_party_details(
 
 	party = frappe.get_doc(party_type, party)
 	currency = party.get("default_currency") or currency or get_company_currency(company)
-	party_address_copy = party_address
+	
+	# party_address_copy = party_address
 	party_address, shipping_address = set_address_details(
 		party_details,
 		party,
@@ -121,25 +126,24 @@ def _get_party_details(
 		company_address,
 		shipping_address,
 	)
+	party_address_copy = party_address
 	set_contact_details(party_details, party, party_type)
 	set_other_values(party_details, party, party_type)
-	set_price_list(party_details, party, party_type, price_list, pos_profile)
+	set_price_list(party_details, party, party_type, price_list, pos_profile, company)
 	## Cycle world customization start
 	# if doctype =="Sales Invoice":
-	user = frappe.session.user
-	user_per=frappe.get_value('User Permission',{'user':user,'allow':'Branch','is_default':1}, 'for_value')
-	company_user_per=frappe.get_value('User',user, 'company')
-	if (user_per or company_user_per) and party_address_copy:
+	company_name=company
+	branch_name=branch
+	if (branch_name or company_name) and party_address_copy:
 		doctype="Company"
-		if(user_per):
+		if(branch_name):
 			doctype = "Branch"
-		branch_add=frappe.get_value("Dynamic Link",{"link_doctype": doctype, "link_name": user_per or company_user_per},"parent")
+		branch_add=frappe.get_value("Dynamic Link",{"link_doctype": doctype, "link_name": branch_name or company_name},"parent")
 		branch_state = None
 		if branch_add:
 			branch_state=frappe.get_value("Address",{'name':branch_add},"gst_state")
 		if branch_add and branch_state:
-			# branch_state=frappe.get_value("Address",{'name':branch_add},"gst_state")
-			# if party_address:
+			
 			party_state=frappe.get_value("Address",{'name':party_address_copy},"gst_state")
 			settings = frappe.get_single('Stock Settings')
 			if branch_state != party_state:
@@ -354,7 +358,7 @@ def get_default_price_list(party):
 		return frappe.db.get_value("Customer Group", party.customer_group, "default_price_list")
 
 
-def set_price_list(party_details, party, party_type, given_price_list, pos=None):
+def set_price_list(party_details, party, party_type, given_price_list, pos=None, company=None):
 	# price list
 	price_list = get_permitted_documents("Price List")
 
@@ -370,7 +374,11 @@ def set_price_list(party_details, party, party_type, given_price_list, pos=None)
 			pos_price_list = frappe.get_value("POS Profile", pos, "selling_price_list")
 			price_list = pos_price_list or given_price_list
 	else:
-		price_list = get_default_price_list(party) or given_price_list
+		if(company and company == "TEAM CYCLE WORLD PVT. LTD." and party_type == "Supplier"):
+			if(frappe.db.exists("Price List", "Standard Buying")):
+				price_list = "Standard Buying"
+		else:
+			price_list = get_default_price_list(party) or given_price_list
 
 	if price_list:
 		party_details.price_list_currency = frappe.db.get_value(
@@ -919,15 +927,15 @@ def get_party_shipping_address(doctype, name):
 def get_partywise_advanced_payment_amount(
 	party_type, posting_date=None, future_payment=0, company=None
 ):
-	cond = "1=1"
+	cond = " 1=1"
 	if posting_date:
 		if future_payment:
-			cond = "posting_date <= '{0}' OR DATE(creation) <= '{0}' " "".format(posting_date)
+			cond = " posting_date <= '{0}' OR DATE(creation) <= '{0}' " "".format(posting_date)
 		else:
-			cond = "posting_date <= '{0}'".format(posting_date)
+			cond = " posting_date <= '{0}'".format(posting_date)
 
 	if company:
-		cond += "and company = {0}".format(frappe.db.escape(company))
+		cond += " and company = {0}".format(frappe.db.escape(company))
 
 	data = frappe.db.sql(
 		""" SELECT party, sum({0}) as amount

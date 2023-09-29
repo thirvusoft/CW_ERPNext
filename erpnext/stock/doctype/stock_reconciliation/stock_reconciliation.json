@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_rename": 1,
  "autoname": "naming_series:",
  "creation": "2013-03-28 10:35:31",
  "description": "This tool helps you to update or fix the quantity and valuation of stock in the system. It is typically used to synchronise the system values and what actually exists in your warehouses.",
@@ -145,11 +146,10 @@
  "idx": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-02-06 14:28:19.043905",
+ "modified": "2023-09-15 16:48:39.843862",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Reconciliation",
- "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {
@@ -168,6 +168,5 @@
  "search_fields": "posting_date",
  "show_name_in_global_search": 1,
  "sort_field": "modified",
- "sort_order": "DESC",
- "states": []
+ "sort_order": "DESC"
 }

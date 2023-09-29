@@ -5,9 +5,6 @@
   },
   {
    "card": "Total Warehouses"
-  },
-  {
-   "card": "Total Stock Value"
   }
  ],
  "charts": [
@@ -17,10 +14,6 @@
   },
   {
    "chart": "Purchase Receipt Trends",
-   "width": "Half"
-  },
-  {
-   "chart": "Delivery Trends",
    "width": "Half"
   },
   {
@@ -43,8 +36,8 @@
  "idx": 0,
  "is_default": 0,
  "is_standard": 1,
- "modified": "2023-04-12 22:36:23.907163",
- "modified_by": "nithya@thirvusoft.in",
+ "modified": "2023-08-30 10:09:41.151684",
+ "modified_by": "shankar@thirvusoft.in",
  "module": "Stock",
  "name": "Stock",
  "owner": "Administrator"

@@ -9,7 +9,7 @@ frappe.query_reports["Purchase Analytics"] = {
 			label: __("Tree Type"),
 			fieldtype: "Select",
 			options: ["Supplier Group","Supplier","Item Group","Item", "Brand"],
-			default: "Brand",
+			default: "Supplier",
 			reqd: 1
 		},
 		{
@@ -65,7 +65,21 @@ frappe.query_reports["Purchase Analytics"] = {
 			],
 			default: "Monthly",
 			reqd: 1
-		}
+		},
+		{
+			fieldname: "branch",
+			label: __("Branch"),
+			fieldtype: "Link",
+			options: "Branch",
+			default: frappe.defaults.get_user_default("Branch"),
+			get_query: function() {
+				return {
+					"filters":{
+						"company":frappe.query_report.get_filter_value("company")
+					}
+				}
+			}
+		},
 
 	],
 	after_datatable_render: function(datatable_obj) {
