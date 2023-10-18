@@ -15,6 +15,7 @@
   "salutation",
   "customer_name",
   "customer_group",
+  "default_price_list",
   "gender",
   "pan",
   "tax_withholding_category",
@@ -38,7 +39,6 @@
   "currency_and_price_list",
   "default_currency",
   "column_break_14",
-  "default_price_list",
   "address_contacts",
   "address_html",
   "website",
@@ -517,7 +517,7 @@
    "link_fieldname": "party"
   }
  ],
- "modified": "2023-07-01 12:39:28.794887",
+ "modified": "2023-10-13 13:03:14.302045",
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Customer",

@@ -17,7 +17,7 @@ class PartyLink(Document):
 			)
 
 		existing_party_link = frappe.get_all(
-			"Party Link", {"primary_party": self.secondary_party}, pluck="primary_role"
+			"Party Link", {"primary_party": self.secondary_party, "name":["!=", self.name]}, pluck="primary_role"
 		)
 		if existing_party_link:
 			frappe.throw(
@@ -27,7 +27,7 @@ class PartyLink(Document):
 			)
 
 		existing_party_link = frappe.get_all(
-			"Party Link", {"secondary_party": self.primary_party}, pluck="primary_role"
+			"Party Link", {"secondary_party": self.primary_party, "name":["!=", self.name]}, pluck="primary_role"
 		)
 		if existing_party_link:
 			frappe.throw(

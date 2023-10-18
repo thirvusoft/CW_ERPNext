@@ -91,9 +91,19 @@ def execute(filters=None):
 			data.append(report_data)
 
 	add_additional_uom_columns(columns, data, include_uom, conversion_factors)
+	data = get_price_list_rate(data)
 	if filters.get("group_by_brand"):
 		data = group_by_brand(data)
 	return columns, data
+
+
+def get_price_list_rate(data):
+	for i in data:
+		if i.get("item_code") and frappe.db.exists("Item", i.get("item_code")):
+			i["st_buying_cost"] = frappe.db.get_value("Item", i.get("item_code"), "standard_buying_cost")
+			i["selling_price"] = frappe.db.get_value("Item", i.get("item_code"), "standard_rate")
+			i["mrp"] = frappe.db.get_value("Item", i.get("item_code"), "mrp")
+	return data
 
 
 def group_by_brand(data):
@@ -122,6 +132,7 @@ def group_by_brand(data):
 def get_columns(filters):
 	"""return columns"""
 	hide = filters.get("group_by_brand") or 0
+	hide_role = "HO Admin" not in frappe.get_roles()
 	columns = [
 		{
 			"label": _("Item"),
@@ -147,6 +158,27 @@ def get_columns(filters):
 			"width": 200,
 			"hidden": hide
 		},
+		{
+            "label": ("Buying Price"),
+            "fieldname": "st_buying_cost",
+            "fieldtype": "Currency",
+            "width": 150,
+            "hidden": hide_role or hide
+        },
+        {
+            "label": ("Franchise Buying" if hide_role else "Selling Price" ),
+            "fieldname": "selling_price",
+            "fieldtype": "Currency",
+            "width": 150,
+			"hidden":  hide
+        },
+        {
+            "label": ("MRP"),
+            "fieldname": "mrp",
+            "fieldtype": "Currency",
+            "width": 150,
+			"hidden":  hide
+        },
 		{
 			"label": _("Warehouse"),
 			"fieldname": "warehouse",

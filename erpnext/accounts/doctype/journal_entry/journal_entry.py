@@ -350,7 +350,9 @@ class JournalEntry(AccountsController):
 			from erpnext.selling.doctype.customer.customer import check_credit_limit
 
 			for customer in customers:
+				frappe.flags.ignore_throw = True
 				check_credit_limit(customer, self.company)
+				frappe.flags.ignore_throw = False
 
 	def validate_cheque_info(self):
 		if self.voucher_type in ["Bank Entry"]:

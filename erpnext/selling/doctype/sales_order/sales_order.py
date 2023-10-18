@@ -278,9 +278,9 @@ class SalesOrder(SellingController):
 				"bypass_credit_limit_check",
 			)
 		):
-			frappe.flags.in_sales_order = True
-			check_credit_limit(self.customer, self.company)
-			frappe.flags.in_sales_order = False
+			frappe.flags.ignore_throw = True
+			check_credit_limit(self.customer, self.company, doc=self)
+			frappe.flags.ignore_throw = False
 
 	def check_nextdoc_docstatus(self):
 		# Checks Delivery Note

@@ -318,8 +318,7 @@ class Gstr1Report(object):
 
 		elif self.filters.get("type_of_business") == "CDNR-UNREG":
 			b2c_limit = frappe.db.get_single_value("GST Settings", "b2c_limit")
-			conditions += """ AND ifnull(SUBSTR(place_of_supply, 1, 2),'') != ifnull(SUBSTR(company_gstin, 1, 2),'')
-				AND (is_return = 1 OR is_debit_note = 1)
+			conditions += """ AND (is_return = 1 OR is_debit_note = 1)
 				AND IFNULL(gst_category, '') in ('Unregistered', 'Overseas')"""
 
 		elif self.filters.get("type_of_business") == "EXPORT":
