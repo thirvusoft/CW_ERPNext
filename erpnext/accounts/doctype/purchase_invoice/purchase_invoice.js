@@ -297,10 +297,14 @@ erpnext.accounts.PurchaseInvoice = erpnext.buying.BuyingController.extend({
 			})
 	},
 	shipping_address: function(){
+		if(this.frm.doc.docstatus != 1 || frappe.session.user=="sabithakrishnasamy@cycleworld.in" ){
 		this.frm.trigger("supplier")
+		}
 	},
 	billing_address: function(){
+		if(this.frm.doc.docstatus != 1 || frappe.session.user=="sabithakrishnasamy@cycleworld.in" ){
 		this.frm.trigger("supplier")
+		}
 	},
 	apply_tds: function(frm) {
 		var me = this;

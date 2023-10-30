@@ -496,35 +496,37 @@ def get_customer_list(doctype, txt, searchfield, start, page_len, filters=None):
 		("%%%s%%" % txt, "%%%s%%" % txt, "%%%s%%" % txt, "%%%s%%" % txt, start, page_len),
 	)
 
-def get_branch_vouchers(branch):
+def get_branch_vouchers(branch, company):
 	branch_address = frappe.get_all("Address", filters={'branch':["in", branch]}, pluck="name")
 	all_vouchers = []
 	vouchers = {"Sales Invoice":[], "Purchase Invoice":[], "Purchase Receipt":[], "Payment Entry":[], "Journal Entry":[], "Branch Linked Payment":[]}
 
 	for i in vouchers:
 		if(i == "Sales Invoice"):
-			vouchers[i].extend(frappe.db.get_all("Sales Invoice", filters={"customer_address":["in", branch_address]}, pluck="name"))
+			vouchers[i].extend(frappe.db.get_all("Sales Invoice", filters={"customer_address":["in", branch_address], "company":company}, pluck="name"))
 		elif(i in ["Purchase Invoice", "Purchase Receipt"]):
-			vouchers[i].extend(frappe.db.get_all(i, filters={"supplier_address":["in", branch_address]}, pluck="name"))
+			vouchers[i].extend(frappe.db.get_all(i, filters={"supplier_address":["in", branch_address], "company":company}, pluck="name"))
 		elif(i == "Payment Entry"):
-			vouchers[i].extend(frappe.db.get_all("Payment Entry Reference", filters={
-					"reference_name":["in", vouchers["Sales Invoice"]+vouchers["Purchase Invoice"]+vouchers["Purchase Receipt"]],
-					"docstatus":1
-					},
-					pluck="parent",
-					group_by = "parent"
-					))
+			if vouchers["Sales Invoice"]+vouchers["Purchase Invoice"]+vouchers["Purchase Receipt"]:
+				vouchers[i].extend(frappe.db.get_all("Payment Entry Reference", filters={
+						"reference_name":["in", vouchers["Sales Invoice"]+vouchers["Purchase Invoice"]+vouchers["Purchase Receipt"]],
+						"docstatus":1
+						},
+						pluck="parent",
+						group_by = "parent"
+						))
 		elif(i=="Branch Linked Payment"):
-			vouchers["Branch Linked Payment"] = frappe.get_all("Payment Entry", filters={"party_branch":["in", branch]}, pluck="name")
+			vouchers["Branch Linked Payment"] = frappe.get_all("Payment Entry", filters={"party_branch":["in", branch], "company":company}, pluck="name")
 
 		elif(i == "Journal Entry"):
-			vouchers[i].extend(frappe.db.get_all("Journal Entry Account", filters={
-					"reference_name":["in", vouchers["Sales Invoice"]+vouchers["Purchase Invoice"]+vouchers["Purchase Receipt"]+vouchers["Payment Entry"]]
-					},
-					pluck="parent"
-					))
+			if vouchers["Sales Invoice"]+vouchers["Purchase Invoice"]+vouchers["Purchase Receipt"]+vouchers["Payment Entry"]:
+				vouchers[i].extend(frappe.db.get_all("Journal Entry Account", filters={
+						"reference_name":["in", vouchers["Sales Invoice"]+vouchers["Purchase Invoice"]+vouchers["Purchase Receipt"]+vouchers["Payment Entry"]]
+						},
+						pluck="parent"
+						))
 			vouchers[i].extend(frappe.db.get_all("Journal Entry", filters={
-					"docstatus":1, "name":["not in", vouchers[i]], "party_branch":["in", branch]
+					"docstatus":1, "name":["not in", vouchers[i]], "party_branch":["in", branch], "company":company
 					},
 					pluck="name"
 					))
@@ -590,7 +592,9 @@ def check_credit_limit(customer, company, doc={}, ignore_outstanding_sales_order
 	credit_limit = get_credit_limit_brand_wise(customer, company, doc, ignore_outstanding_sales_order=ignore_outstanding_sales_order, party_branch=party_branch)
 	branch_vouchers=[]
 	if branch_wise_credit_limit_splitted:
-		branch_vouchers = get_branch_vouchers([party_branch] if is_credit_setted else other_branches)
+		branch_vouchers = get_branch_vouchers([party_branch] if is_credit_setted else other_branches, company)
+		if is_credit_setted and not branch_vouchers:
+			branch_vouchers=["123"]
 	outstand_vouchers = get_outstanding_invoices("Customer", customer, get_party_account("Customer", customer, company))
 	tot_outstanding = 0
 	for i in outstand_vouchers:

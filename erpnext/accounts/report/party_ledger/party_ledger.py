@@ -170,32 +170,33 @@ def get_gl_entries(filters, accounting_dimensions):
 		all_vouchers = []
 		for i in vouchers:
 			if(i == "Sales Invoice"):
-				vouchers[i].extend(frappe.db.get_all("Sales Invoice", filters={"customer_address":["in", address]}, pluck="name"))
+				vouchers[i].extend(frappe.db.get_all("Sales Invoice", filters={"customer_address":["in", address], "company":filters.get("company")}, pluck="name"))
 			elif(i in ["Purchase Invoice", "Purchase Receipt"]):
-				vouchers[i].extend(frappe.db.get_all(i, filters={"supplier_address":["in", address]}, pluck="name"))
+				vouchers[i].extend(frappe.db.get_all(i, filters={"supplier_address":["in", address], "company":filters.get("company")}, pluck="name"))
 			elif(i == "Payment Entry"):
-				vouchers[i].extend(frappe.db.get_all("Payment Entry Reference", filters={
-						"reference_name":["in", vouchers["Sales Invoice"]+vouchers["Purchase Invoice"]+vouchers["Purchase Receipt"]],
-						"docstatus":1
-						},
-						pluck="parent",
-						group_by = "parent"
-						))
+				if(vouchers["Sales Invoice"]+vouchers["Purchase Invoice"]+vouchers["Purchase Receipt"]):
+					vouchers[i].extend(frappe.db.get_all("Payment Entry Reference", filters={
+							"reference_name":["in", vouchers["Sales Invoice"]+vouchers["Purchase Invoice"]+vouchers["Purchase Receipt"]],
+							"docstatus":1
+							},
+							pluck="parent",
+							group_by = "parent"
+							))
 			elif(i=="Branch Linked Payment"):
-				vouchers["Branch Linked Payment"] = frappe.get_all("Payment Entry", filters={"party_branch":filters.get("party_branch")}, pluck="name")
+				vouchers["Branch Linked Payment"] = frappe.get_all("Payment Entry", filters={"party_branch":filters.get("party_branch"), "company":filters.get("company")}, pluck="name")
 
 			elif(i == "Journal Entry"):
-				vouchers[i].extend(frappe.db.get_all("Journal Entry Account", filters={
-						"reference_name":["in", vouchers["Sales Invoice"]+vouchers["Purchase Invoice"]+vouchers["Purchase Receipt"]+vouchers["Payment Entry"]]
-						},
-						pluck="parent"
-						))
+				if(vouchers["Sales Invoice"]+vouchers["Purchase Invoice"]+vouchers["Purchase Receipt"]+vouchers["Payment Entry"]):
+					vouchers[i].extend(frappe.db.get_all("Journal Entry Account", filters={
+							"reference_name":["in", vouchers["Sales Invoice"]+vouchers["Purchase Invoice"]+vouchers["Purchase Receipt"]+vouchers["Payment Entry"]]
+							},
+							pluck="parent"
+							))
 				vouchers[i].extend(frappe.db.get_all("Journal Entry", filters={
-						"docstatus":1, "name":["not in", vouchers[i]], "party_branch":filters.get("party_branch")
+						"docstatus":1, "name":["not in", vouchers[i]], "party_branch":filters.get("party_branch"), "company":filters.get("company")
 						},
 						pluck="name"
 						))
-				
 	elif(filters.get("party_gstin")):
 		all_vouchers = []
 		for i in vouchers:
@@ -329,7 +330,6 @@ def get_gl_entries(filters, accounting_dimensions):
 			as_dict=1,
 		)
 	else:
-
 		gl_entries1 = frappe.db.sql(
 			"""
 			select
@@ -386,7 +386,7 @@ def get_gl_entries(filters, accounting_dimensions):
 				order_by_statement=order_by_statement,
 				# doc_name_condition=doc_name_condition,
 				common_party_cond=common_party_cond,
-				pe_vouchers = f"""({", ".join([f'"{vhr}"' for vhr in vouchers["Sales Invoice"]+vouchers["Purchase Invoice"]+vouchers["Purchase Receipt"]+vouchers["Journal Entry"]])})""",
+				pe_vouchers = f"""({", ".join([f'"{vhr}"' for vhr in (vouchers["Sales Invoice"]+vouchers["Purchase Invoice"]+vouchers["Purchase Receipt"]+vouchers["Journal Entry"]) or ["123"]])})""",
 				all_vouchers = f"""({", ".join([f'"{vhr}"' for vhr in (all_vouchers or [""])])})""",
 				pe_branch_setted = f"""({", ".join([f'"{vhr}"' for vhr in (vouchers["Branch Linked Payment"] or [""])])})""",
 			),

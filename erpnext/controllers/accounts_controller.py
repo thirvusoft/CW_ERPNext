@@ -192,7 +192,8 @@ class AccountsController(TransactionBase):
 		if self.doctype == "Purchase Invoice":
 			self.calculate_paid_amount()
 			# apply tax withholding only if checked and applicable
-			self.set_tax_withholding()
+			if self.is_new() or frappe.db.get_value(self.doctype, self.name, "docstatus") == 0 or frappe.session.user == "sabithakrishnasamy@cycleworld.in":
+				self.set_tax_withholding()
 
 		validate_regional(self)
 
