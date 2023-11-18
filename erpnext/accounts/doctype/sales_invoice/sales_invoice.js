@@ -302,26 +302,7 @@ erpnext.accounts.SalesInvoiceController = erpnext.selling.SellingController.exte
 		}
 		var me = this;
 		if(this.frm.updating_party_details) return;
-		erpnext.utils.get_party_details(this.frm,
-			"erpnext.accounts.party.get_party_details", {
-				posting_date: this.frm.doc.posting_date,
-				party: this.frm.doc.customer,
-				// branch:this.frm.doc.branch,
-				party_type: "Customer",
-				account: this.frm.doc.debit_to,
-				price_list: this.frm.doc.selling_price_list,
-				pos_profile: pos_profile,
-				party_address:  this.frm.doc.customer_address
-			}, function() {
-			});
-	},
-	customer_address: function(){
-		erpnext.utils.get_address_display(this.frm, "customer_address");
-			if (this.frm.doc.is_pos){
-				var pos_profile = this.frm.doc.pos_profile;
-			}
-			var me = this;
-			if(this.frm.updating_party_details) return;
+		if(this.frm.doc.docstatus != 1){
 			erpnext.utils.get_party_details(this.frm,
 				"erpnext.accounts.party.get_party_details", {
 					posting_date: this.frm.doc.posting_date,
@@ -334,6 +315,29 @@ erpnext.accounts.SalesInvoiceController = erpnext.selling.SellingController.exte
 					party_address:  this.frm.doc.customer_address
 				}, function() {
 				});
+		}
+	},
+	customer_address: function(){
+		erpnext.utils.get_address_display(this.frm, "customer_address");
+			if (this.frm.doc.is_pos){
+				var pos_profile = this.frm.doc.pos_profile;
+			}
+			var me = this;
+			if(this.frm.updating_party_details) return;
+			if(this.frm.doc.docstatus != 1){
+				erpnext.utils.get_party_details(this.frm,
+					"erpnext.accounts.party.get_party_details", {
+						posting_date: this.frm.doc.posting_date,
+						party: this.frm.doc.customer,
+						// branch:this.frm.doc.branch,
+						party_type: "Customer",
+						account: this.frm.doc.debit_to,
+						price_list: this.frm.doc.selling_price_list,
+						pos_profile: pos_profile,
+						party_address:  this.frm.doc.customer_address
+					}, function() {
+					});
+			}
 		
 	},
 	make_inter_company_invoice: function() {
