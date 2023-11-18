@@ -929,6 +929,8 @@ def get_credit_limit_brand_wise(customer, company, doc={}, credit_limit=[], igno
 			else:
 				if credit.company and not credit.brand and not credit.branch and party_branch not in credit_setted_branches:
 					credit_value.append({"company":credit.company,"credit":credit.credit_limit,'current_credit':0})
+	if not credit_value:
+		return credit_value
 	for i in outstand_invoice:
 		sales_invoice = i
 		if isinstance(sales_invoice, str):

@@ -54,12 +54,11 @@ def get_pricing_rules(args, doc=None):
 		if pricing_rule:
 			rules.append(pricing_rule)
 		pr_to_remove = []
-	
 	for i in rules:
 		if(i.get("valid_qty") and doc):
 			pricing_rule_applied_qty=frappe.db.sql(f""" 
 					  	select sum(qty) as qty, parent
-					  	from `tabSales Invoice Item`
+					  	from `tab{doc.doctype} Item`
 					  	where pricing_rules like "%{i.name}%"
 						and docstatus = 1 
 						and parent != "{doc.name}" and item_code = "{args.get('item_code')}"
@@ -67,7 +66,10 @@ def get_pricing_rules(args, doc=None):
 			
 			if(len(pricing_rule_applied_qty) and len(pricing_rule_applied_qty[0])):
 				pricing_rule_applied_qty = pricing_rule_applied_qty[0][0] or 0
-
+				pricing_rule_applied_qty_copy = pricing_rule_applied_qty
+			non_pr_applied_qty = sum([l.get("qty") or 0 for l in doc.items if(l.get("item_code") == args.get("item_code") and i.name not in l.get("pricing_rules"))])
+			non_pr_applied_idx = [str(l.get("idx")) or 0 for l in doc.items if(l.get("item_code") == args.get("item_code") and i.name not in l.get("pricing_rules"))]
+			pr_applied_qty = sum([l.get("qty") or 0 for l in doc.items if(l.get("item_code") == args.get("item_code") and i.name in l.get("pricing_rules"))])
 			for j in doc.items:
 				if(
 					args.get("item_code") == j.get("item_code") and 
@@ -75,7 +77,18 @@ def get_pricing_rules(args, doc=None):
 					j.idx <= (args.get("idx") or len(doc.items) or 0)
 				):
 					pricing_rule_applied_qty += (j.get("qty") or 1)
-
+			qty_list = [l.get("qty") or 1 for l in doc.items if(l.get("item_code") == args.get("item_code"))]
+			result = find_combination(qty_list, (i.valid_qty-pricing_rule_applied_qty_copy))
+			if not result and doc.get("_action") != "save" and (pricing_rule_applied_qty_copy+pr_applied_qty) < i.valid_qty and non_pr_applied_qty > (i.valid_qty-(pricing_rule_applied_qty_copy+pr_applied_qty)):
+				msg=get_pricing_rule_alert_message(
+					item_code=args.get("item_code"), 
+					non_pr_appl_doc_qty=non_pr_applied_qty, 
+					non_pr_appl_doc_idx=", ".join(non_pr_applied_idx), 
+					pending_qty_to_apply=(i.valid_qty-(pricing_rule_applied_qty_copy+pr_applied_qty)), 
+					bal_qty_to_apply=non_pr_applied_qty, 
+					max_qty=i.valid_qty, 
+					pr_applied_qty=pr_applied_qty)
+				frappe.msgprint(msg, alert=True)
 			if(pricing_rule_applied_qty > i.valid_qty or (args.get('qty') or 0) > i.valid_qty):
 				pr_to_remove.append(i)
 
@@ -84,6 +97,39 @@ def get_pricing_rules(args, doc=None):
 		for i in rules:
 			i.update({"remove_for_qty_validation":1})
 	return rules
+
+def get_pricing_rule_alert_message(
+		item_code, 
+		non_pr_appl_doc_qty, 
+		pending_qty_to_apply, 
+		bal_qty_to_apply, 
+		max_qty, 
+		non_pr_appl_doc_idx, 
+		pr_applied_qty
+		):
+	msg=f"""
+        <p>
+        <b>Warning:</b>
+        </p>
+        <p>Due to pricing rule limitations, the maximum quantity eligible for the discount for item <b>{item_code}</b> is {max_qty}. You have already used {max_qty-(pending_qty_to_apply+pr_applied_qty)} quantities, leaving {pending_qty_to_apply+pr_applied_qty} remaining.</p>
+        
+        <p>To ensure the pricing rule is applied correctly, <b>please split the  {non_pr_appl_doc_qty} quantity [In the Row(s) {non_pr_appl_doc_idx}] into two rows:</b></p>
+        <ul>
+           <li><b>{pending_qty_to_apply} quantities to benefit from the discount</b></li>
+            <li><b>{bal_qty_to_apply-pending_qty_to_apply} quantity to be invoiced at the standard price</b></li>
+        </ul>
+        <p>This adjustment ensures that the pricing rule is applied to the maximum allowable extent.</pre></p>"""
+	return msg
+
+
+def find_combination(qty_lst, target_sum):
+	temp_sum = 0
+	for r in qty_lst:
+		if temp_sum + r <= target_sum:
+			temp_sum += r
+		if temp_sum == target_sum:
+			return True
+	return None
 
 
 def sorted_by_priority(pricing_rules, args, doc=None):

@@ -322,6 +322,7 @@ def get_pricing_rule_for_item(args, price_list_rate=0, doc=None, for_validate=Fa
 				item_code=args.get("item_code"),
 				rate=args.get("price_list_rate"),
 			)
+		item_details.pricing_rules=""
 		item_details.discount_percentage = 0
 		item_details.discount_amount = 0
 		return item_details
@@ -369,7 +370,6 @@ def get_pricing_rule_for_item(args, price_list_rate=0, doc=None, for_validate=Fa
 
 			if pricing_rule.coupon_code_based == 1 and args.coupon_code == None:
 				return item_details
-
 			if not pricing_rule.validate_applied_rule:
 				if pricing_rule.price_or_product_discount == "Price":
 					apply_price_discount_rule(pricing_rule, item_details, args)

@@ -16,7 +16,7 @@ frappe.query_reports["Purchase Analytics"] = {
 			fieldname: "doc_type",
 			label: __("based_on"),
 			fieldtype: "Select",
-			options: ["Purchase Order","Purchase Receipt","Purchase Invoice"],
+			options: ["Purchase Receipt","Purchase Invoice"],
 			default: "Purchase Invoice",
 			reqd: 1
 		},
