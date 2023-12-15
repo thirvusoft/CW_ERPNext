@@ -192,7 +192,7 @@ class AccountsController(TransactionBase):
 		if self.doctype == "Purchase Invoice":
 			self.calculate_paid_amount()
 			# apply tax withholding only if checked and applicable
-			if self.is_new() or frappe.db.get_value(self.doctype, self.name, "docstatus") == 0 or frappe.session.user == "sabithakrishnasamy@cycleworld.in":
+			if self.is_new() or frappe.db.get_value(self.doctype, self.name, "docstatus") == 0 or frappe.session.user in ["sabithakrishnasamy@cycleworld.in", "cycleworldadmin@cycleworld.in"]:
 				self.set_tax_withholding()
 
 		validate_regional(self)
@@ -1713,7 +1713,7 @@ class AccountsController(TransactionBase):
 
 		for d in self.get("payment_schedule"):
 			if self.doctype == "Sales Order" and getdate(d.due_date) < getdate(self.transaction_date):
-				frappe.throw(
+				frappe.msgprint(
 					_("Row {0}: Due Date in the Payment Terms table cannot be before Posting Date").format(d.idx)
 				)
 			elif d.due_date in dates:

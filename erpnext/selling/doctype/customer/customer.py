@@ -973,12 +973,14 @@ def get_credit_limit_brand_wise(customer, company, doc={}, credit_limit=[], igno
 			where {cond} 
 			"""
 		)[0][0] or 0
-		if outstand_order:
-			outstanding_amount += sum(frappe.get_all("Sales Order", filters={"name":["in", outstand_order]}, pluck="outstanding_amount"))
+		# if outstand_order:
+		# 	outstanding_amount += sum(frappe.get_all("Sales Order", filters={"name":["in", outstand_order]}, pluck="outstanding_amount"))
 		if doc and doc.get("name"):
 			if doc.get("name") not in outstand_invoice and frappe.db.exists("Sales Invoice", doc.get("name")):
 				update_taxable_values(doc, "validate")
-			outstanding_amount += (doc.get("outstanding_amount") or 0)
+				outstanding_amount += (doc.get("rounded_total") or 0)
+			elif(doc.get("name") and doc.get("doctype") == "Sales Order"):
+				outstanding_amount += (doc.get("rounded_total") or 0)
 		credit_value[0]["current_credit"] = outstanding_amount
 		return credit_value
 	invoice_with_brand, invoice_names_with_brand=[],[]

@@ -72,6 +72,12 @@ frappe.query_reports["Sales Analytics"] = {
 			fieldtype: "Link",
 			options: "Branch",
 			default: frappe.defaults.get_user_default("Branch"),
+			"get_query": function() {
+				const company = frappe.query_report.get_filter_value('company');
+				return {
+					filters: { 'company': company }
+				}
+			}
 		},
 	],
 	after_datatable_render: function(datatable_obj) {

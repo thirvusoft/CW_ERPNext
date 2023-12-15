@@ -297,12 +297,12 @@ erpnext.accounts.PurchaseInvoice = erpnext.buying.BuyingController.extend({
 			})
 	},
 	shipping_address: function(){
-		if(this.frm.doc.docstatus != 1 || frappe.session.user=="sabithakrishnasamy@cycleworld.in" ){
+		if(this.frm.doc.docstatus != 1 || (["cycleworldadmin@cycleworld.in", "sabithakrishnasamy@cycleworld.in"]).includes(frappe.session.user) ){
 		this.frm.trigger("supplier")
 		}
 	},
 	billing_address: function(){
-		if(this.frm.doc.docstatus != 1 || frappe.session.user=="sabithakrishnasamy@cycleworld.in" ){
+		if(this.frm.doc.docstatus != 1 || (["cycleworldadmin@cycleworld.in", "sabithakrishnasamy@cycleworld.in"]).includes(frappe.session.user) ){
 		this.frm.trigger("supplier")
 		}
 	},

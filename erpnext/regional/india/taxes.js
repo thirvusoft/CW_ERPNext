@@ -4,7 +4,7 @@ erpnext.setup_auto_gst_taxation = (doctype) => {
 			frm.trigger('get_tax_template');
 		},
 		shipping_address: function(frm) {
-			if(frm.doc.docstatus != 1 || frappe.session.user=="sabithakrishnasamy@cycleworld.in" ){
+			if(frm.doc.docstatus != 1 || (["cycleworldadmin@cycleworld.in", "sabithakrishnasamy@cycleworld.in"]).includes(frappe.session.user) ){
 				frm.trigger('get_tax_template');
 			}
 			

@@ -312,7 +312,29 @@ def get_gl_entries(filters, accounting_dimensions):
 				voucher_type, voucher_no, {dimension_fields}
 				cost_center, project,
 				against_voucher_type, against_voucher, account_currency,
-				remarks, against, is_opening, creation {select_fields}
+				remarks, against, is_opening, creation {select_fields},
+				case
+					when voucher_type = "Payment Entry"
+						then (select party_branch from `tabPayment Entry` where name=`tabGL Entry`.voucher_no)
+					when voucher_type = "Journal Entry"
+						then (select party_branch from `tabJournal Entry` where name=`tabGL Entry`.voucher_no)
+					when voucher_type = "Sales Invoice"
+						then (
+							select ad.branch 
+							from `tabSales Invoice` si 
+							left outer join `tabAddress` ad 
+								on si.customer_address  = ad.name
+							where si.name=`tabGL Entry`.voucher_no
+							)
+					when voucher_type = "Purchase Invoice"
+						then (
+							select ad.branch 
+							from `tabPurchase Invoice` pi 
+							left outer join `tabAddress` ad 
+								on pi.supplier_address  = ad.name
+							where pi.name=`tabGL Entry`.voucher_no
+							)
+					end as party_branch
 			from `tabGL Entry`
 			where company=%(company)s {conditions}
 			{common_party_cond}
@@ -337,7 +359,29 @@ def get_gl_entries(filters, accounting_dimensions):
 				voucher_type, voucher_no, {dimension_fields}
 				cost_center, project,
 				against_voucher_type, against_voucher, account_currency,
-				remarks, against, is_opening, creation {select_fields}
+				remarks, against, is_opening, creation {select_fields},
+				case
+					when voucher_type = "Payment Entry"
+						then (select party_branch from `tabPayment Entry` where name=`tabGL Entry`.voucher_no)
+					when voucher_type = "Journal Entry"
+						then (select party_branch from `tabJournal Entry` where name=`tabGL Entry`.voucher_no)
+					when voucher_type = "Sales Invoice"
+						then (
+							select ad.branch 
+							from `tabSales Invoice` si 
+							left outer join `tabAddress` ad 
+								on si.customer_address  = ad.name
+							where si.name=`tabGL Entry`.voucher_no
+							)
+					when voucher_type = "Purchase Invoice"
+						then (
+							select ad.branch 
+							from `tabPurchase Invoice` pi 
+							left outer join `tabAddress` ad 
+								on pi.supplier_address  = ad.name
+							where pi.name=`tabGL Entry`.voucher_no
+							)
+					end as party_branch
 			from `tabGL Entry`
 			where company=%(company)s {conditions}
 			AND `tabGL Entry`.voucher_type not in ("Sales Invoice", "Purchase Invoice", "Purchase Receipt", "Payment Entry", "Journal Entry")
@@ -364,7 +408,29 @@ def get_gl_entries(filters, accounting_dimensions):
 				voucher_type, voucher_no, {dimension_fields}
 				cost_center, project,
 				against_voucher_type, against_voucher, account_currency,
-				remarks, against, is_opening, creation {select_fields}
+				remarks, against, is_opening, creation {select_fields},
+				case
+					when voucher_type = "Payment Entry"
+						then (select party_branch from `tabPayment Entry` where name=`tabGL Entry`.voucher_no)
+					when voucher_type = "Journal Entry"
+						then (select party_branch from `tabJournal Entry` where name=`tabGL Entry`.voucher_no)
+					when voucher_type = "Sales Invoice"
+						then (
+							select ad.branch 
+							from `tabSales Invoice` si 
+							left outer join `tabAddress` ad 
+								on si.customer_address  = ad.name
+							where si.name=`tabGL Entry`.voucher_no
+							)
+					when voucher_type = "Purchase Invoice"
+						then (
+							select ad.branch 
+							from `tabPurchase Invoice` pi 
+							left outer join `tabAddress` ad 
+								on pi.supplier_address  = ad.name
+							where pi.name=`tabGL Entry`.voucher_no
+							)
+					end as party_branch
 			from `tabGL Entry`
 			where 
 				CASE
@@ -776,7 +842,18 @@ def get_columns(filters):
 				"fieldtype": "Dynamic Link",
 				"options": "voucher_type",
 				"width": 180,
-			},
+			}])
+	if(filters.get("company") == "TEAM CYCLE WORLD PVT. LTD."):
+		columns.extend([
+				{
+					"label": _("Party Branch"),
+					"fieldname": "party_branch",
+					"fieldtype": "Link",
+					"options": "Branch",
+					"width": 180,
+				}
+			])
+	columns.extend([
 			{"label": _("Against Account"), "fieldname": "against", "width": 120},
 			{"label": _("Party Type"), "fieldname": "party_type", "width": 100},
 			{"label": _("Party"), "fieldname": "party", "width": 100},

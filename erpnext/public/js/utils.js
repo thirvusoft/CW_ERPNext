@@ -208,8 +208,9 @@ $.extend(erpnext.utils, {
 				let accounting_dimensions = r.message[0];
 				accounting_dimensions.forEach((dimension) => {
 					let found = filters.some(el => el.fieldname === dimension['fieldname']);
-
+					let company_filter_found = filters.some(el => el.fieldname === "company");
 					if (!found) {
+						
 						filters.splice(index, 0, {
 							"fieldname": dimension["fieldname"],
 							"label": __(dimension["label"]),
@@ -219,7 +220,11 @@ $.extend(erpnext.utils, {
 								:''],
 							"hidden":frappe.defaults.get_user_permissions()['Branch']?(frappe.defaults.get_user_permissions()['Branch'].filter(d=> d.is_default)?1:0):0,
 							get_data: function(txt) {
-								return frappe.db.get_link_options(dimension["document_type"], txt);
+								let dim_filters={};
+								if(company_filter_found){
+									dim_filters={"company":frappe.query_report.get_filter_value("company")}
+								}
+								return frappe.db.get_link_options(dimension["document_type"], txt, dim_filters);
 							},
 						});
 					}

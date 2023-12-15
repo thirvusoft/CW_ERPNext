@@ -195,9 +195,9 @@ def get_conditions(filters):
 		conditions += " and supplier = %(supplier)s"
 
 	if filters.get("from_date"):
-		conditions += " and bill_date>=%(from_date)s"
+		conditions += " and posting_date>=%(from_date)s"
 	if filters.get("to_date"):
-		conditions += " and bill_date<=%(to_date)s"
+		conditions += " and posting_date<=%(to_date)s"
 
 	if filters.get("mode_of_payment"):
 		conditions += " and ifnull(mode_of_payment, '') = %(mode_of_payment)s"

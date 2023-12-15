@@ -54,8 +54,10 @@ def get_pricing_rules(args, doc=None):
 		if pricing_rule:
 			rules.append(pricing_rule)
 		pr_to_remove = []
+	if doc and not doc.get("items"):
+		doc.items = []
 	for i in rules:
-		if(i.get("valid_qty") and doc):
+		if(i.get("valid_qty") and doc and args):
 			pricing_rule_applied_qty=frappe.db.sql(f""" 
 					  	select sum(qty) as qty, parent
 					  	from `tab{doc.doctype} Item`
@@ -67,9 +69,13 @@ def get_pricing_rules(args, doc=None):
 			if(len(pricing_rule_applied_qty) and len(pricing_rule_applied_qty[0])):
 				pricing_rule_applied_qty = pricing_rule_applied_qty[0][0] or 0
 				pricing_rule_applied_qty_copy = pricing_rule_applied_qty
-			non_pr_applied_qty = sum([l.get("qty") or 0 for l in doc.items if(l.get("item_code") == args.get("item_code") and i.name not in l.get("pricing_rules"))])
-			non_pr_applied_idx = [str(l.get("idx")) or 0 for l in doc.items if(l.get("item_code") == args.get("item_code") and i.name not in l.get("pricing_rules"))]
-			pr_applied_qty = sum([l.get("qty") or 0 for l in doc.items if(l.get("item_code") == args.get("item_code") and i.name in l.get("pricing_rules"))])
+			non_pr_applied_qty = 0
+			for l in doc.items:
+				if(l.get("item_code") == args.get("item_code") and i.name not in (l.get("pricing_rules") or "")):
+					non_pr_applied_qty+= (l.get("qty") or 0)
+			# non_pr_applied_qty = sum([l.get("qty") or 0 for l in doc.items if(l.get("item_code") == args.get("item_code") and i.name not in l.get("pricing_rules"))])
+			non_pr_applied_idx = [str(l.get("idx")) or 0 for l in doc.items if(l.get("item_code") == args.get("item_code") and i.name not in (l.get("pricing_rules") or ""))]
+			pr_applied_qty = sum([l.get("qty") or 0 for l in doc.items if(l.get("item_code") == args.get("item_code") and i.name in (l.get("pricing_rules") or ""))])
 			for j in doc.items:
 				if(
 					args.get("item_code") == j.get("item_code") and 
